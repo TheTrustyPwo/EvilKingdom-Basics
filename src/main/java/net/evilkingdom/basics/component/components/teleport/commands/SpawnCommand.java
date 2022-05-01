@@ -57,39 +57,37 @@ public class SpawnCommand extends CommandHandler {
             return false;
         }
         switch (arguments.length) {
-            case 0 -> LuckPermsUtilities.getPermissions(player.getUniqueId()).whenComplete((playerPermissions, playerPermissionsThrowable) -> {
-                if (!playerPermissions.contains("basics.teleport.commands.spawn")) {
+            case 0 -> {
+                if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.teleport.commands.spawn")) {
                     this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.invalid-permissions").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
                     player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.pitch"));
-                    return;
+                    return false;
                 }
-                SelfData.get().whenComplete((selfData, selfDataThrowable) -> {
-                    Bukkit.getScheduler().runTask(this.plugin, () -> player.teleport(selfData.getSpawn()));
-                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.success.no-target").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
-                    player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.success.player.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.pitch"));
-                });
-            });
-            case 1 -> LuckPermsUtilities.getPermissions(player.getUniqueId()).whenComplete((playerPermissions, playerPermissionsThrowable) -> {
-                if (!playerPermissions.contains("basics.teleport.commands.spawn.targeted")) {
+                final SelfData selfData = SelfData.getViaCache().get();
+                Bukkit.getScheduler().runTask(this.plugin, () -> player.teleport(selfData.getSpawn()));
+                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.success.no-target").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
+                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.success.player.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.pitch"));
+            }
+            case 1 -> {
+                if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.teleport.commands.spawn.targeted")) {
                     this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.invalid-permissions").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
                     player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.pitch"));
-                    return;
+                    return false;
                 }
                 final Optional<? extends Player> optionalTarget = Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> onlinePlayer.getName().equalsIgnoreCase(arguments[0])).findFirst();
                 if (optionalTarget.isEmpty()) {
                     this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.invalid-player").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", arguments[0]))));
                     player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.pitch"));
-                    return;
+                    return false;
                 }
                 final Player target = optionalTarget.get();
-                SelfData.get().whenComplete((selfData, selfDataThrowable) -> {
-                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.with-target.player").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", target.getName()))));
-                    player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.success.player.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.pitch"));
-                    Bukkit.getScheduler().runTask(this.plugin, () -> target.teleport(selfData.getSpawn()));
-                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.with-target.target").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()))));
-                    player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.success.target.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.target.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.target.pitch"));
-                });
-            });
+                final SelfData selfData = SelfData.getViaCache().get();
+                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.with-target.player").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", target.getName()))));
+                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.success.player.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.player.pitch"));
+                Bukkit.getScheduler().runTask(this.plugin, () -> target.teleport(selfData.getSpawn()));
+                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.with-target.target").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()))));
+                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.success.target.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.target.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.success.target.pitch"));
+            }
         }
         return true;
     }

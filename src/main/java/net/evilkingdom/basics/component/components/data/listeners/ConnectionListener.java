@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.data.listeners;
 
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.data.objects.PlayerData;
+import net.evilkingdom.commons.constructor.objects.ConstructorRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,13 +47,12 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent playerQuitEvent) {
         final Player player = playerQuitEvent.getPlayer();
-        PlayerData.get(player.getUniqueId()).whenComplete((playerData, playerDataThrowable) -> {
-            if (!playerData.isCached()) {
-                return;
-            }
-            playerData.save(true);
-            playerData.uncache();
-        });
+        if (PlayerData.getViaCache(player.getUniqueId()).isEmpty()) {
+            return;
+        }
+        final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
+        playerData.save(true);
+        playerData.uncache();
     }
 
 }
