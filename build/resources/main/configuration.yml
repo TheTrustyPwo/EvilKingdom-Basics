@@ -1,0 +1,165 @@
+#Configuration for the components.
+components:
+
+  #Configuration for the Data component.
+  data:
+
+    #The configuration for the database.
+    #All of the data for this plugin is stored via MongoDB and if this fails, the plugin will disable itself.
+    database:
+
+      #The name of the database.
+      #This should probably be the name of the server this is for.
+      name: "prison"
+
+      #The connection string of the database.
+      connection-string: "mongodb://root:BCwjJV8YQ6Qg5PveKuAWf5Gy@174.138.184.86:27017"
+
+
+  #Configuration for the Teleport component.
+  teleport:
+
+    #The component's commands.
+    commands:
+
+      #The "/setspawn" command.
+      #The permission for this command is "basics.teleport.commands.setspawn".
+      setspawn:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the withdrawal is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/setspawn&e."
+
+          #The message sent when the player's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the setspawn is a success.
+          success:
+            - "&6&lPrison &7» &eYou have &6set&e the &6spawn&e!"
+
+      #The "/spawn" command.
+      #The permission for this command is "basics.teleport.commands.spawn" or if a target is selected it is "basics.teleport.commands.spawn.targeted".
+      spawn:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the ban is a success.
+          success:
+
+            #The sound sent to the player.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the target.
+            target:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 0.5
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/spawn [player]&e."
+
+          #The message sent when the player's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the targeted player is invalid (not online).
+          #Variables:
+          # - %player% ~ The targeted player.
+          invalid-player:
+            - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
+
+          #The message sent when the spawn is a success.
+          success:
+
+            #The message sent if there is no target (just to the player).
+            no-target:
+              - "&6&lBasics &7» &eYou have teleported to &6spawn&e!"
+
+            #The message sent if there is a target.
+            #Variables:
+            # - %player% ~ The targeted player.
+            with-target:
+
+              #The message sent to the player.
+              player:
+                - "&6&lBasics &7» &eYou have teleported &6%player%&e to &6spawn&e!"
+
+              #The message sent to the targeted player.
+              target:
+                - "&6&lBasics &7» &eYou have been teleported to &6spawn &eby &6%player%&e!"
