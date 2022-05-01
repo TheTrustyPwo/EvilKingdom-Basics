@@ -74,8 +74,8 @@ public class SelfData {
                 final double x = (double) datapointObject.getInnerObjects().get("x").getObject();
                 final double y = (double) datapointObject.getInnerObjects().get("y").getObject();
                 final double z = (double) datapointObject.getInnerObjects().get("z").getObject();
-                final float yaw = (float) datapointObject.getInnerObjects().get("yaw").getObject();
-                final float pitch = (float) datapointObject.getInnerObjects().get("pitch").getObject();
+                final float yaw = ((Double) datapointObject.getInnerObjects().get("yaw").getObject()).floatValue();
+                final float pitch = ((Double) datapointObject.getInnerObjects().get("pitch").getObject()).floatValue();
                 this.spawn = new Location(world, x, y, z, yaw, pitch);
             }
            return true;
