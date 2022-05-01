@@ -35,7 +35,7 @@ public class SelfData {
     public SelfData() {
         this.plugin = Basics.getPlugin();
 
-        this.spawn = new Location(Bukkit.getWorlds().get(0), 0, 175, 0);
+        this.spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
     }
 
     /**
@@ -91,8 +91,8 @@ public class SelfData {
         final DatapointModel datapointModel = new DatapointModel("self");
         final DatapointObject spawnDatapointObject = new DatapointObject();
         spawnDatapointObject.getInnerObjects().put("world", new DatapointObject(this.spawn.getWorld().getName()));
-        spawnDatapointObject.getInnerObjects().put("x", new DatapointObject(this.spawn.getZ()));
-        spawnDatapointObject.getInnerObjects().put("y", new DatapointObject(this.spawn.getYaw()));
+        spawnDatapointObject.getInnerObjects().put("x", new DatapointObject(this.spawn.getX()));
+        spawnDatapointObject.getInnerObjects().put("y", new DatapointObject(this.spawn.getY()));
         spawnDatapointObject.getInnerObjects().put("z", new DatapointObject(this.spawn.getZ()));
         spawnDatapointObject.getInnerObjects().put("yaw", new DatapointObject(this.spawn.getYaw()));
         spawnDatapointObject.getInnerObjects().put("pitch", new DatapointObject(this.spawn.getPitch()));
