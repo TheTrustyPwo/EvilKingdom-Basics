@@ -51,7 +51,7 @@ public class SpawnCommand extends CommandHandler {
             return false;
         }
         final Player player = (Player) commandSender;
-        if (arguments.length > 2) {
+        if (arguments.length > 1) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.invalid-usage").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.pitch"));
             return false;
