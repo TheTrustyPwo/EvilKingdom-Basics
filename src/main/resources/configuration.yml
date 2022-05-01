@@ -75,7 +75,7 @@ components:
             - "&6&lPrison &7» &eYou have &6set&e the &6spawn&e!"
 
       #The "/spawn" command.
-      #The permission for this command is "basics.teleport.commands.spawn" or if a target is selected it is "basics.teleport.commands.spawn.targeted".
+      #There is no permission for this command unless a target is selected- which if there is it is "basics.teleport.commands.spawn.targeted".
       spawn:
 
         #The command's sounds.

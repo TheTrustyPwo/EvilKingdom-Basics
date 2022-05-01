@@ -58,11 +58,6 @@ public class SpawnCommand extends CommandHandler {
         }
         switch (arguments.length) {
             case 0 -> {
-                if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.teleport.commands.spawn")) {
-                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.invalid-permissions").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
-                    player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.spawn.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.spawn.sounds.error.pitch"));
-                    return false;
-                }
                 final SelfData selfData = SelfData.getViaCache().get();
                 Bukkit.getScheduler().runTask(this.plugin, () -> player.teleport(selfData.getSpawn()));
                 this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.spawn.messages.success.no-target").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
