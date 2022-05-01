@@ -39,7 +39,6 @@ public class DataComponent {
         this.connectToDatabase();
         this.initializeData();
         this.registerListeners();
-        this.registerCommands();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Data] &aInitialized."));
     }
 
@@ -51,14 +50,6 @@ public class DataComponent {
         this.terminateData();
         this.disconnectFromDatabase();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Data] &cTerminated."));
-    }
-
-    /**
-     * Allows you to register the commands.
-     */
-    private void registerCommands() {
-        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Data] &aRegistering commands..."));
-        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Data] &aRegistered commands."));
     }
 
     /**
