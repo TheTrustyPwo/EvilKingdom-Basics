@@ -65,17 +65,15 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent playerQuitEvent) {
         final Player player = playerQuitEvent.getPlayer();
-        LuckPermsUtilities.getPermissions(player.getUniqueId()).whenComplete((permissions, permissionsThrowable) -> {
-            if (permissions.contains("components.network.staff")) {
-                final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-                final TransmissionSite transmissionSite = transmissionImplementor.getTransmissionSites().stream().findFirst().get();
-                Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.internal").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()).replace("%server%", transmissionSite.getName())))));
-                transmissionSite.getServers().forEach(transmissionServer -> {
-                    final Transmission transmission = new Transmission(transmissionSite, transmissionServer, TransmissionType.MESSAGE, UUID.randomUUID(),"staff_quit=" + player.getUniqueId());
-                    transmission.send();
-                });
-            }
-        });
+        if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("components.network.staff")) {
+            final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+            final TransmissionSite transmissionSite = transmissionImplementor.getTransmissionSites().stream().findFirst().get();
+            Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.internal").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()).replace("%server%", transmissionSite.getName())))));
+            transmissionSite.getServers().forEach(transmissionServer -> {
+                final Transmission transmission = new Transmission(transmissionSite, transmissionServer, TransmissionType.MESSAGE, UUID.randomUUID(),"staff_quit=" + player.getUniqueId());
+                transmission.send();
+            });
+        }
         if (PlayerData.getViaCache(player.getUniqueId()).isEmpty()) {
             return;
         }
