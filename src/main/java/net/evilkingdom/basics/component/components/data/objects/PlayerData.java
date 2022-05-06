@@ -54,8 +54,8 @@ public class PlayerData {
             return CompletableFuture.supplyAsync(() -> true);
         } else {
             final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-            final Datasite datasite = dataImplementor.getDatasites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
-            final Datapoint datapoint = datasite.getDatapoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
+            final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+            final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
             return datapoint.exists(this.uuid.toString());
         }
     }
@@ -68,8 +68,8 @@ public class PlayerData {
      */
     private CompletableFuture<Boolean> load() {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getDatasites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
-        final Datapoint datapoint = datasite.getDatapoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
         return datapoint.get(this.uuid.toString()).thenApply(optionalDatapointModel -> {
             if (optionalDatapointModel.isEmpty()) {
                 return false;
@@ -117,8 +117,8 @@ public class PlayerData {
 //        datapointModel.getObjects().put("blocksMined", new DatapointObject(this.blocksMined));
 //        datapointModel.getObjects().put("multiplier", new DatapointObject(this.multiplier));
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getDatasites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
-        final Datapoint datapoint = datasite.getDatapoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
         datapoint.save(datapointModel, asynchronous);
     }
 
@@ -243,18 +243,14 @@ public class PlayerData {
      * Allows you to cache the data.
      */
     public void cache() {
-        final HashSet<PlayerData> previousCache = cache;
-        previousCache.add(this);
-        cache = previousCache;
+        cache.add(this);
     }
 
     /**
      * Allows you to uncache the data.
      */
     public void uncache() {
-        final HashSet<PlayerData> previousCache = cache;
-        previousCache.remove(this);
-        cache = previousCache;
+        cache.remove(this);
     }
 
     /**

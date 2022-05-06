@@ -48,8 +48,8 @@ public class SelfData {
             return CompletableFuture.supplyAsync(() -> true);
         } else {
             final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-            final Datasite datasite = dataImplementor.getDatasites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
-            final Datapoint datapoint = datasite.getDatapoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
+            final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+            final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
             return datapoint.exists("self");
         }
     }
@@ -61,8 +61,8 @@ public class SelfData {
      */
     private CompletableFuture<Boolean> load() {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getDatasites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
-        final Datapoint datapoint = datasite.getDatapoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
         return datapoint.get("self").thenApply(optionalDatapointModel -> {
             if (optionalDatapointModel.isEmpty()) {
                 return false;
@@ -98,8 +98,8 @@ public class SelfData {
         spawnDatapointObject.getInnerObjects().put("pitch", new DatapointObject(this.spawn.getPitch()));
         datapointModel.getObjects().put("spawn", spawnDatapointObject);
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getDatasites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
-        final Datapoint datapoint = datasite.getDatapoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
         datapoint.save(datapointModel, asynchronous);
     }
 
@@ -125,18 +125,14 @@ public class SelfData {
      * Allows you to cache the data.
      */
     public void cache() {
-        final HashSet<SelfData> previousCache = cache;
-        previousCache.add(this);
-        cache = previousCache;
+        cache.add(this);
     }
 
     /**
      * Allows you to uncache the data.
      */
     public void uncache() {
-        final HashSet<SelfData> previousCache = cache;
-        previousCache.remove(this);
-        cache = previousCache;
+        cache.remove(this);
     }
 
     /**

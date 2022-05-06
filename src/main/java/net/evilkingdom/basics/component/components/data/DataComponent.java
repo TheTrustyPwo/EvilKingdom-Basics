@@ -67,14 +67,15 @@ public class DataComponent {
     private void connectToDatabase() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Data] &aConnecting to database..."));
         final Datasite datasite = new Datasite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.data.database.name"), DatasiteType.MONGO_DATABASE, new String[]{this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.data.database.connection-string")});
-        new Datapoint(datasite, "basics_players");
-        new Datapoint(datasite, "basics_self");
         try {
             datasite.initialize();
         } catch (final Exception exception) {
             Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&c[Basics » Component » Components » Data] Failed to connect to database, terminating to prevent a shitshow."));
             this.plugin.getPluginLoader().disablePlugin(this.plugin);
+            return;
         }
+        new Datapoint(datasite, "basics_players").register();
+        new Datapoint(datasite, "basics_self").register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Data] &aConnected to database."));
     }
 
@@ -84,7 +85,7 @@ public class DataComponent {
     private void disconnectFromDatabase() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Data] &cDisconnecting from database..."));
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getDatasites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         datasite.terminate();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Data] &cDisconnected from database."));
     }
