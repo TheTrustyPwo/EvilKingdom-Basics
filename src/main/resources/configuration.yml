@@ -1,6 +1,89 @@
 #Configuration for the components.
 components:
 
+  #Configuration for the Network component.
+  network:
+
+    #Configuration for the transmissions.
+    transmissions:
+
+      #Configuration for the sockets.
+      sockets:
+
+        #The internal sockets.
+        internal:
+
+          #The name of the socket.
+          name: prison
+
+          #The port of the socket.
+          port: 25575
+
+        #The external sockets.
+        external:
+
+          #The name of the socket.
+          lobby:
+
+            #The IP of the socket.
+            ip: 174.138.184.86
+
+            #The port of the socket.
+            port: 25572
+
+    #Configuration for staff related stuff.
+    staff:
+
+      #Configuration for staff connections.
+      connection:
+
+        #The messages for staff connections.
+        #These messages are only sent to players with the permission "basics.network.staff".
+        #Variables:
+        # - %player% ~ The player.
+        # - %server% ~ The server.
+        messages:
+
+          #The message sent when a staff joins a server.
+          join:
+
+            #The message sent if the server is internal (the current server).
+            internal:
+              - "&6&lBasics &7» &6%player% &ehas connected to &6here&e."
+
+            #The message sent if the server is external (another server).
+            external:
+              - "&6&lBasics &7» &6%player% &ehas connected to &6%server%&e."
+
+          #The message sent when a staff joins a server.
+          quit:
+
+            #The message sent if the server is internal (the current server).
+            internal:
+              - "&6&lBasics &7» &6%player% &ehas disconnected from &6here&e."
+
+            #The message sent if the server is external (another server).
+            external:
+              - "&6&lBasics &7» &6%player% &ehas disconnected from &6%server%&e."
+
+      #Configuration for server status changes.
+      server-status:
+
+        #The messages for server status changes.
+        #These messages are only sent to players with the permission "basics.network.staff".
+        #Variables:
+        # - %server% ~ The server.
+        messages:
+
+          #The message sent when a server goes online.
+          online:
+            - "&6&lBasics &7» &6%server% &eis now &aonline&e."
+
+          #The message sent when a server goes offline.
+          offline:
+            - "&6&lBasics &7» &6%server% &eis now &coffline&e."
+
+
   #Configuration for the Data component.
   data:
 

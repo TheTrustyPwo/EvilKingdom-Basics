@@ -49,27 +49,26 @@ public class SetSpawnCommand extends CommandHandler {
      * @param arguments ~ The command's arguments.
      */
     @Override
-    public boolean onExecution(final CommandSender sender, final String[] arguments) {
+    public void onExecution(final CommandSender sender, final String[] arguments) {
         if (!(sender instanceof Player)) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.setspawn.messages.invalid-executor").forEach(string -> sender.sendMessage(StringUtilities.colorize(string)));
-            return false;
+            return;
         }
         final Player player = (Player) sender;
         if (arguments.length != 0) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.setspawn.messages.invalid-usage").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.setspawn.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.setspawn.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.setspawn.sounds.error.pitch"));
-            return false;
+            return;
         }
         if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.teleport.commands.setspawn")) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.setspawn.messages.invalid-permissions").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.setspawn.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.setspawn.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.setspawn.sounds.error.pitch"));
-            return false;
+            return;
         }
         final SelfData selfData = SelfData.getViaCache().get();
         selfData.setSpawn(player.getLocation());
         this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.teleport.commands.setspawn.messages.success").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
         player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.teleport.commands.setspawn.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.setspawn.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.teleport.commands.setspawn.sounds.success.pitch"));
-        return true;
     }
 
     /**

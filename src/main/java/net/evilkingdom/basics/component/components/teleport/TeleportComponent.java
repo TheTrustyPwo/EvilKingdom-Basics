@@ -50,12 +50,4 @@ public class TeleportComponent {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Teleport] &aRegistered commands."));
     }
 
-    /**
-     * Allows you to register the listeners.
-     */
-    private void registerListeners() {
-        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Teleport] &aRegistering listeners..."));
-        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Teleport] &aRegistered listeners."));
-    }
-
 }
