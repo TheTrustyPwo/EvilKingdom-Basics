@@ -72,11 +72,11 @@ public class NetworkComponent {
      */
     private void initializeTransmissions() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing transmissions..."));
-        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sockets.internal.name"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.sockets.internal.port"));
+        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sites.internal.name"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.sites.internal.port"));
         transmissionSite.setHandler(new TransmissionListener());
         transmissionSite.register();
-        this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.transmissions.sockets.external").getKeys(false).forEach(name -> {
-            final TransmissionServer transmissionServer = new TransmissionServer(transmissionSite, name, new String[]{this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sockets.external." + name + ".ip"), String.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.sockets.external." + name + ".port"))});
+        this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.transmissions.sites.external").getKeys(false).forEach(name -> {
+            final TransmissionServer transmissionServer = new TransmissionServer(transmissionSite, name, new String[]{this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sites.external." + name + ".ip"), String.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.sites.external." + name + ".port"))});
             transmissionServer.register();
             final Transmission transmission = new Transmission(transmissionSite, transmissionServer, TransmissionType.MESSAGE, UUID.randomUUID(),"server_status=online");
             transmission.send();
