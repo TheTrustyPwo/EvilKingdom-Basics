@@ -96,6 +96,7 @@ public class NetworkComponent {
                 final Transmission transmission = new Transmission(transmissionSite, transmissionServer, TransmissionType.MESSAGE, UUID.randomUUID(),"server_status=offline");
                 transmission.send();
             });
+            transmissionSite.unregister();
         }
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated transmissions..."));
     }
