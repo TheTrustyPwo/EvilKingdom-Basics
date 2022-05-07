@@ -137,21 +137,25 @@ public class PaperWorldConfig {
 
     public List<net.minecraft.world.Difficulty> zombieBreakDoors;
     public List<net.minecraft.world.Difficulty> vindicatorBreakDoors;
+    private final List<net.minecraft.world.entity.EntityType<?>> entitiesValidForBreakDoors = Arrays.asList(net.minecraft.world.entity.EntityType.ZOMBIE, net.minecraft.world.entity.EntityType.ZOMBIE_VILLAGER, net.minecraft.world.entity.EntityType.HUSK, net.minecraft.world.entity.EntityType.ZOMBIFIED_PIGLIN, net.minecraft.world.entity.EntityType.VINDICATOR);
+    public java.util.Map<net.minecraft.world.entity.EntityType<?>, java.util.List<net.minecraft.world.Difficulty>> entitiesDifficultyBreakDoors = new it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<>();
     private void setupEntityBreakingDoors() {
-        zombieBreakDoors = getEnumList(
-            "door-breaking-difficulty.zombie",
-            java.util.Arrays.stream(net.minecraft.world.Difficulty.values())
-                .filter(net.minecraft.world.entity.monster.Zombie.DOOR_BREAKING_PREDICATE)
-                .collect(Collectors.toList()),
-            net.minecraft.world.Difficulty.class
-        );
-        vindicatorBreakDoors = getEnumList(
-            "door-breaking-difficulty.vindicator",
-            java.util.Arrays.stream(net.minecraft.world.Difficulty.values())
-                .filter(net.minecraft.world.entity.monster.Vindicator.DOOR_BREAKING_PREDICATE)
-                .collect(Collectors.toList()),
-            net.minecraft.world.Difficulty.class
-        );
+        for (net.minecraft.world.entity.EntityType<?> entityType : entitiesValidForBreakDoors) {
+            java.util.function.Predicate<net.minecraft.world.Difficulty> difficultyPredicate = net.minecraft.world.entity.monster.Zombie.DOOR_BREAKING_PREDICATE;
+            if (entityType.getBaseClass() == net.minecraft.world.entity.monster.Vindicator.class) {
+                difficultyPredicate = net.minecraft.world.entity.monster.Vindicator.DOOR_BREAKING_PREDICATE;
+            }
+            entitiesDifficultyBreakDoors.put(
+                entityType,
+                getEnumList(
+                    "door-breaking-difficulty." + entityType.id,
+                    java.util.Arrays.stream(net.minecraft.world.Difficulty.values())
+                        .filter(difficultyPredicate)
+                        .collect(Collectors.toList()),
+                    net.minecraft.world.Difficulty.class
+                )
+            );
+        }
     }
 
     public Map<net.minecraft.world.entity.EntityType<?>, Integer> entityPerChunkSaveLimits = new HashMap<>();

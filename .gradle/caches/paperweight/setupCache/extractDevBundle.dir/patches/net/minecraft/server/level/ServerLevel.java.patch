@@ -2500,7 +2500,7 @@
      }
  
      public boolean areEntitiesLoaded(long chunkPos) {
-@@ -1484,102 +2389,183 @@
+@@ -1484,102 +2389,184 @@
      }
  
      private boolean isPositionTickingWithEntitiesLoaded(long chunkPos) {
@@ -2543,6 +2543,7 @@
  
 -        @Override
          public void onTickingStart(Entity entity) {
++            if (entity instanceof net.minecraft.world.entity.Marker) return; // Paper - Don't tick markers
              ServerLevel.this.entityTickList.add(entity);
 +            ServerLevel.this.entityManager.addNavigatorsIfPathingToRegion(entity); // Paper - optimise notify
          }
