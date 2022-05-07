@@ -10,11 +10,11 @@ import net.evilkingdom.basics.component.components.network.listeners.custom.Tran
 import net.evilkingdom.commons.transmission.TransmissionImplementor;
 import net.evilkingdom.commons.transmission.enums.TransmissionType;
 import net.evilkingdom.commons.transmission.objects.Transmission;
-import net.evilkingdom.commons.transmission.objects.TransmissionServer;
 import net.evilkingdom.commons.transmission.objects.TransmissionSite;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
 import org.bukkit.Bukkit;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class NetworkComponent {
@@ -72,13 +72,11 @@ public class NetworkComponent {
      */
     private void initializeTransmissions() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing transmissions..."));
-        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sites.internal.name"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.sites.internal.port"));
+        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sites.internal"), "basics");
         transmissionSite.setHandler(new TransmissionListener());
         transmissionSite.register();
-        this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.transmissions.sites.external").getKeys(false).forEach(name -> {
-            final TransmissionServer transmissionServer = new TransmissionServer(transmissionSite, name, new String[]{this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sites.external." + name + ".ip"), String.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.sites.external." + name + ".port"))});
-            transmissionServer.register();
-            final Transmission transmission = new Transmission(transmissionSite, transmissionServer, TransmissionType.MESSAGE, UUID.randomUUID(),"server_status=online");
+        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.transmissions.sites.external").forEach(serverName -> {
+            final Transmission transmission = new Transmission(transmissionSite, TransmissionType.MESSAGE, serverName, "basics", UUID.randomUUID(),"server_status=online");
             transmission.send();
         });
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized transmissions."));
@@ -90,10 +88,11 @@ public class NetworkComponent {
     private void terminateTransmissions() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating transmissions..."));
         final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-        if (transmissionImplementor.getTransmissionSites().stream().findFirst().isPresent()) {
-            final TransmissionSite transmissionSite = transmissionImplementor.getTransmissionSites().stream().findFirst().get();
-            transmissionSite.getServers().forEach(transmissionServer -> {
-                final Transmission transmission = new Transmission(transmissionSite, transmissionServer, TransmissionType.MESSAGE, UUID.randomUUID(),"server_status=offline");
+        final Optional<TransmissionSite> optionalTransmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst();
+        if (optionalTransmissionSite.isPresent()) {
+            final TransmissionSite transmissionSite = optionalTransmissionSite.get();
+            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.transmissions.sites.external").forEach(serverName -> {
+                final Transmission transmission = new Transmission(transmissionSite, TransmissionType.MESSAGE, serverName, "basics", UUID.randomUUID(),"server_status=offline");
                 transmission.send();
             });
             transmissionSite.unregister();
