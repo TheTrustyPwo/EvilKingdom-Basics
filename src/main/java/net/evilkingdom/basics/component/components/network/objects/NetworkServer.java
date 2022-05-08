@@ -73,12 +73,9 @@ public class NetworkServer {
      * Allows you to update the server's data.
      */
     public void updateData() {
-        final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-        final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-        final Transmission ipAddressTransmission = new Transmission(transmissionSite, TransmissionType.REQUEST, this.name, "basics", UUID.randomUUID(),"request=ip_address");
-        ipAddressTransmission.send().thenApplyAsync(ipAddress -> {
-            final String ip = ipAddress.split(":")[0];
-            final int port = Integer.parseInt(ipAddress.split(":")[1]);
+        CompletableFuture.supplyAsync(() -> {
+            final String ip = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.servers.external." + this.name + ".ip");
+            final int port = this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.servers.external." + this.name + ".port");
             try {
                 final Socket socket = new Socket();
                 socket.connect(new InetSocketAddress(ip, port), 15);
@@ -106,6 +103,8 @@ public class NetworkServer {
             }
         });
         if (this.online) {
+            final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+            final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
             final Transmission playerCountTransmission = new Transmission(transmissionSite, TransmissionType.REQUEST, this.name, "basics", UUID.randomUUID(),"request=online_player_count");
             playerCountTransmission.send().whenComplete((playerCount, playerCountThrowable) -> this.playerCount = Integer.parseInt(playerCount));
         }

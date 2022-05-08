@@ -81,7 +81,7 @@ public class NetworkComponent {
      */
     private void initializeTransmissions() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing transmissions..."));
-        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sites.internal"), "basics");
+        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.servers.internal"), "basics");
         transmissionSite.setHandler(new TransmissionListener());
         transmissionSite.register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized transmissions."));
@@ -106,7 +106,7 @@ public class NetworkComponent {
      */
     private void initializeServers() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing servers..."));
-        this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.transmissions.sites.external").stream().map(serverName -> new NetworkServer(serverName)).collect(Collectors.toSet()));
+        this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.transmissions.servers.external").getKeys(false).stream().map(serverName -> new NetworkServer(serverName)).collect(Collectors.toSet()));
         this.serverTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> this.servers.forEach(server -> server.updateData()), 0L, 20L);
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized servers."));
     }
