@@ -23,7 +23,7 @@ public class NetworkServer {
     private final Basics plugin;
 
     private final String name;
-    private boolean online, starting;
+    private boolean online;
     private int playerCount;
 
     public NetworkServer(final String name) {
@@ -40,15 +40,6 @@ public class NetworkServer {
      */
     private int getPlayerCount() {
         return this.playerCount;
-    }
-
-    /**
-     * Allows you to retrieve the if the server is starting.
-     *
-     * @return If the server is starting.
-     */
-    private boolean isStarting() {
-        return this.starting;
     }
 
     /**
@@ -87,17 +78,10 @@ public class NetworkServer {
         }).whenComplete((online, onlineThrowable) -> {
             if (online != this.online) {
                 if (online) {
-                    this.starting = true;
-                    Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
-                        if (!this.starting) {
-                            return;
-                        }
-                        this.online = true;
-                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
-                    }, 160L);
+                    this.online = true;
+                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
                 } else {
                     this.online = false;
-                    this.starting = false;
                     Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
                 }
             }
