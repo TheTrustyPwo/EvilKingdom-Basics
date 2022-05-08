@@ -31,6 +31,8 @@ public class NetworkServer {
         this.plugin = Basics.getPlugin();
 
         this.name = name;
+        this.online = false;
+        this.playerCount = -1;
         this.updateData();
     }
 
