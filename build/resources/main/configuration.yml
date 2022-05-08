@@ -4,32 +4,26 @@ components:
   #Configuration for the Network component.
   network:
 
-    #Configuration for the transmissions.
+    #Configuration for the transmissions (cross-communication).
     transmissions:
 
-      #Configuration for the sites.
-      sites:
+      #Configuration for the servers.
+      servers:
 
-        #The internal sites.
-        internal:
+        #The internal server's name.
+        internal: "prison"
 
-          #The name of the sites.
-          name: prison
-
-          #The port of the sites.
-          port: 25575
-
-        #The external sites.
+        #The external servers.
         external:
 
-          #The name of the sites.
+          #The external server's name.
           lobby:
 
-            #The IP of the sites.
-            ip: 174.138.184.86
+            #The external server's ip.
+            ip: "174.138.184.86"
 
-            #The port of the sites.
-            port: 25572
+            #The external server's port.
+            port: 25566
 
     #Configuration for staff related stuff.
     staff:
