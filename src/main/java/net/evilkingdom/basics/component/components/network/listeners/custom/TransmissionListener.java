@@ -40,6 +40,32 @@ public class TransmissionListener extends TransmissionHandler {
      */
     public void onReceive(final String serverName, final String siteName, final TransmissionType type, final UUID uuid, final String data) {
         switch (type) {
+            case REQUEST -> {
+                final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+                final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
+                switch (data) {
+                    case "request=online_players" -> {
+                        final JsonArray jsonArray = new JsonArray();
+                        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> jsonArray.add(onlinePlayer.getUniqueId().toString()));
+                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + jsonArray);
+                        transmission.send();
+                    }
+                    case "request=online_staff" -> {
+                        final JsonArray jsonArray = new JsonArray();
+                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> jsonArray.add(onlinePlayer.getUniqueId().toString()));
+                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + jsonArray);
+                        transmission.send();
+                    }
+                    case "request=online_player_count" -> {
+                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + Bukkit.getOnlinePlayers().size());
+                        transmission.send();
+                    }
+                    case "request=online_staff_count" -> {
+                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).toList().size());
+                        transmission.send();
+                    }
+                }
+            }
             case MESSAGE -> {
                 final String dataType = data.split("=")[0];
                 switch (dataType) {
