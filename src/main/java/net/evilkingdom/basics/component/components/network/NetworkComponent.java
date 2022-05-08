@@ -7,19 +7,26 @@ package net.evilkingdom.basics.component.components.network;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.network.listeners.ConnectionListener;
 import net.evilkingdom.basics.component.components.network.listeners.custom.TransmissionListener;
+import net.evilkingdom.basics.component.components.network.objects.NetworkServer;
 import net.evilkingdom.commons.transmission.TransmissionImplementor;
 import net.evilkingdom.commons.transmission.enums.TransmissionType;
 import net.evilkingdom.commons.transmission.objects.Transmission;
 import net.evilkingdom.commons.transmission.objects.TransmissionSite;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class NetworkComponent {
 
     private final Basics plugin;
+    private BukkitTask serverTask;
+    private HashSet<NetworkServer> servers;
 
     /**
      * Allows you to create the component.
@@ -36,6 +43,7 @@ public class NetworkComponent {
         this.initializeTransmissions();
         this.registerCommands();
         this.registerListeners();
+        this.initializeServers();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized."));
     }
 
@@ -44,6 +52,7 @@ public class NetworkComponent {
      */
     public void terminate() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating..."));
+        this.terminateServers();
         this.terminateTransmissions();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated."));
     }
@@ -75,10 +84,6 @@ public class NetworkComponent {
         final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.sites.internal"), "basics");
         transmissionSite.setHandler(new TransmissionListener());
         transmissionSite.register();
-        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.transmissions.sites.external").forEach(serverName -> {
-            final Transmission transmission = new Transmission(transmissionSite, TransmissionType.MESSAGE, serverName, "basics", UUID.randomUUID(),"server_status=online");
-            transmission.send();
-        });
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized transmissions."));
     }
 
@@ -91,13 +96,40 @@ public class NetworkComponent {
         final Optional<TransmissionSite> optionalTransmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst();
         if (optionalTransmissionSite.isPresent()) {
             final TransmissionSite transmissionSite = optionalTransmissionSite.get();
-            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.transmissions.sites.external").forEach(serverName -> {
-                final Transmission transmission = new Transmission(transmissionSite, TransmissionType.MESSAGE, serverName, "basics", UUID.randomUUID(),"server_status=offline");
-                transmission.send();
-            });
             transmissionSite.unregister();
         }
-        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated transmissions..."));
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated transmissions."));
     }
 
+    /**
+     * Allows you to initialize the servers.
+     */
+    private void initializeServers() {
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing servers..."));
+        this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.transmissions.sites.external").stream().map(serverName -> new NetworkServer(serverName)).collect(Collectors.toSet()));
+        this.serverTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> this.servers.forEach(server -> server.updateData()), 0L, 20L);
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized servers."));
+    }
+
+    /**
+     * Allows you to terminate the servers.
+     */
+    private void terminateServers() {
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating servers..."));
+        if (this.serverTask == null) {
+            return;
+        }
+        this.serverTask.cancel();
+        this.servers.clear();
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated servers."));
+    }
+
+    /**
+     * Allows you to retrieve the servers.
+     *
+     * @return ~ The servers.
+     */
+    public HashSet<NetworkServer> getServers() {
+        return this.servers;
+    }
 }
