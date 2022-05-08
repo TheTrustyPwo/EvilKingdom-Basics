@@ -46,17 +46,18 @@ public class ConnectionListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent playerJoinEvent) {
         final Player player = playerJoinEvent.getPlayer();
         PlayerData.get(player.getUniqueId()).whenComplete((playerData, playerDataThrowable) -> playerData.cache());
-        LuckPermsUtilities.getPermissions(player.getUniqueId()).whenComplete((permissions, permissionsThrowable) -> {
-            if (permissions.contains("components.network.staff")) {
-                final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-                final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-                Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.internal").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()).replace("%server%", transmissionSite.getName())))));
-                this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.isOnline() && networkServer.getPlayerCount() > 0).forEach(server -> {
-                    final Transmission transmission = new Transmission(transmissionSite, TransmissionType.MESSAGE, server.getName(), "basics", UUID.randomUUID(),"staff_join=" + player.getUniqueId());
-                    transmission.send();
-                });
+        Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
+            if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("components.network.staff")) {
+                return;
             }
-        });
+            final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+            final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
+            Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.internal").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()).replace("%server%", transmissionSite.getServerName())))));
+            this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.isOnline()).forEach(server -> {
+                final Transmission transmission = new Transmission(transmissionSite, TransmissionType.MESSAGE, server.getName(), "basics", UUID.randomUUID(), "staff_join=" + player.getUniqueId());
+                transmission.send();
+            });
+        }, 5L);
     }
 
     /**
@@ -68,8 +69,8 @@ public class ConnectionListener implements Listener {
         if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("components.network.staff")) {
             final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
             final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-            Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.internal").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()).replace("%server%", transmissionSite.getName())))));
-            this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.isOnline() && networkServer.getPlayerCount() > 0).forEach(server -> {
+            Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.internal").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()).replace("%server%", transmissionSite.getServerName())))));
+            this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.isOnline()).forEach(server -> {
                 final Transmission transmission = new Transmission(transmissionSite, TransmissionType.MESSAGE, server.getName(), "basics", UUID.randomUUID(),"staff_quit=" + player.getUniqueId());
                 transmission.send();
             });

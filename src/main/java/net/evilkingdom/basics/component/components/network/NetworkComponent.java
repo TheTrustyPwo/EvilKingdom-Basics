@@ -41,9 +41,9 @@ public class NetworkComponent {
     public void initialize() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing..."));
         this.initializeTransmissions();
+        this.initializeServers();
         this.registerCommands();
         this.registerListeners();
-        this.initializeServers();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized."));
     }
 
