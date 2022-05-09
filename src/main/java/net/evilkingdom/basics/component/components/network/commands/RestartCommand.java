@@ -5,34 +5,29 @@ package net.evilkingdom.basics.component.components.network.commands;
  */
 
 import net.evilkingdom.basics.Basics;
-import net.evilkingdom.basics.component.components.data.objects.SelfData;
-import net.evilkingdom.commons.Commons;
 import net.evilkingdom.commons.command.abstracts.CommandHandler;
 import net.evilkingdom.commons.command.objects.Command;
 import net.evilkingdom.commons.utilities.luckperms.LuckPermsUtilities;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StopCommand extends CommandHandler {
+public class RestartCommand extends CommandHandler {
 
     private final Basics plugin;
 
     /**
      * Allows you to create the command.
      */
-    public StopCommand() {
+    public RestartCommand() {
         this.plugin = Basics.getPlugin();
     }
 
@@ -40,7 +35,7 @@ public class StopCommand extends CommandHandler {
      * Allows you to register the command.
      */
     public void register() {
-        final Command command = new Command(this.plugin, "stop", new ArrayList<String>(), this);
+        final Command command = new Command(this.plugin, "restart", new ArrayList<String>(), this);
         command.register();
     }
 
@@ -71,12 +66,9 @@ public class StopCommand extends CommandHandler {
         }
         Arrays.stream(Bukkit.getPluginManager().getPlugins()).toList().stream().filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
             try {
-                final Method terminateMethod = dependingPlugin.getClass().getDeclaredMethod("terminate");
-                final Field pluginField = dependingPlugin.getClass().getDeclaredField("plugin");
-                terminateMethod.invoke(pluginField);
+                dependingPlugin.getClass().getMethod("getPlugin", null).invoke(null).getClass().getMethod("terminate", null).invoke(null);
                 Bukkit.getPluginManager().disablePlugin(dependingPlugin);
-            } catch (final IllegalAccessException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException exception) {
-                //Pretty much nothing bad happens we get here! :>
+            } catch (final InvocationTargetException | IllegalAccessException | NoSuchMethodException exception) {
             }
         });
         Bukkit.getServer().shutdown();
