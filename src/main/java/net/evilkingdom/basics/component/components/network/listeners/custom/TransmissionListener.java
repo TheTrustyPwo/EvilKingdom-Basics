@@ -4,6 +4,7 @@ package net.evilkingdom.basics.component.components.network.listeners.custom;
  * Made with love by https://kodirati.com/.
  */
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.commons.transmission.TransmissionImplementor;
@@ -47,13 +48,13 @@ public class TransmissionListener extends TransmissionHandler {
                     case "online_players" -> {
                         final JsonArray jsonArray = new JsonArray();
                         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> jsonArray.add(onlinePlayer.getUniqueId().toString()));
-                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + jsonArray);
+                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + new Gson().toJson(jsonArray));
                         transmission.send();
                     }
                     case "online_staff" -> {
                         final JsonArray jsonArray = new JsonArray();
                         Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> jsonArray.add(onlinePlayer.getUniqueId().toString()));
-                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + jsonArray);
+                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + new Gson().toJson(jsonArray));
                         transmission.send();
                     }
                 }
