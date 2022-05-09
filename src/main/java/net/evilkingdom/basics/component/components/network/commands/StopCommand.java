@@ -73,7 +73,7 @@ public class StopCommand extends CommandHandler {
             try {
                 final Method terminateMethod = dependingPlugin.getClass().getDeclaredMethod("terminate");
                 final Field pluginField = dependingPlugin.getClass().getDeclaredField("plugin");
-                terminateMethod.invoke(pluginField);
+                terminateMethod.invoke(pluginField.get(null));
                 Bukkit.getPluginManager().disablePlugin(dependingPlugin);
             } catch (final IllegalAccessException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException exception) {
                 //Pretty much nothing bad happens we get here! :>

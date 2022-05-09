@@ -14,7 +14,9 @@ import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,9 +68,12 @@ public class RestartCommand extends CommandHandler {
         }
         Arrays.stream(Bukkit.getPluginManager().getPlugins()).toList().stream().filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
             try {
-                dependingPlugin.getClass().getMethod("getPlugin", null).invoke(null).getClass().getMethod("terminate", null).invoke(null);
+                final Method terminateMethod = dependingPlugin.getClass().getDeclaredMethod("terminate");
+                final Field pluginField = dependingPlugin.getClass().getDeclaredField("plugin");
+                terminateMethod.invoke(pluginField.get(null));
                 Bukkit.getPluginManager().disablePlugin(dependingPlugin);
-            } catch (final InvocationTargetException | IllegalAccessException | NoSuchMethodException exception) {
+            } catch (final IllegalAccessException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException exception) {
+                //Pretty much nothing bad happens we get here! :>
             }
         });
         Bukkit.spigot().restart();
