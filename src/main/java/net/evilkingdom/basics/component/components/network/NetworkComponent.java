@@ -106,7 +106,7 @@ public class NetworkComponent {
      */
     private void initializeServers() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing servers..."));
-        this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.transmissions.servers.external").stream().map(serverName -> new NetworkServer(serverName)).collect(Collectors.toSet()));
+        this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.transmissions.servers.external").getKeys(false).stream().map(serverName -> new NetworkServer(serverName, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.servers.external." + serverName + ".ip"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.servers.external." + serverName + ".port"))).collect(Collectors.toSet()));
         this.serverTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> this.servers.forEach(server -> server.updateData()), 0L, 100L);
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized servers."));
     }

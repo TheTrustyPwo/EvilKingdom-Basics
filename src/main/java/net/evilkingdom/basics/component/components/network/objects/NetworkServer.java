@@ -12,6 +12,7 @@ import net.evilkingdom.commons.transmission.objects.TransmissionSite;
 import net.evilkingdom.commons.utilities.luckperms.LuckPermsUtilities;
 import net.evilkingdom.commons.utilities.mojang.MojangUtilities;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
+import net.minecraft.server.packs.repository.Pack;
 import org.bukkit.Bukkit;
 
 import java.net.InetSocketAddress;
@@ -23,14 +24,17 @@ public class NetworkServer {
 
     private final Basics plugin;
 
-    private final String name;
+    private final String name, ip;
+    private final int port;
     private boolean online;
     private int playerCount;
 
-    public NetworkServer(final String name) {
+    public NetworkServer(final String name, final String ip, final int port) {
         this.plugin = Basics.getPlugin();
 
         this.name = name;
+        this.ip = ip;
+        this.port = port;
         this.online = false;
         this.playerCount = -1;
     }
@@ -63,24 +67,49 @@ public class NetworkServer {
     }
 
     /**
+     * Allows you to retrieve the server's ip.
+     *
+     * @return The server's ip.
+     */
+    public String getIP() {
+        return this.ip;
+    }
+
+    /**
+     * Allows you to retrieve the server's port.
+     *
+     * @return The server's port.
+     */
+    public Integer getPort() {
+        return this.port;
+    }
+
+    /**
      * Allows you to update the server's data.
      */
     public void updateData() {
-        final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-        final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.REQUEST, this.name, "basics", UUID.randomUUID(), "request=online_player_count");
-        transmission.send().whenComplete((onlinePlayerCount, onlinePlayerCountThrowable) -> {
-            final boolean online = !onlinePlayerCount.equals("response=request_failed");
+        MojangUtilities.isOnline(this.ip, this.port).whenComplete((online, onlineThrowable) -> {
             if (online != this.online) {
                 if (online) {
                     this.online = true;
-                    this.playerCount = Integer.parseInt(onlinePlayerCount.replace("response=", ""));
                     Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
                 } else {
                     this.online = false;
                     this.playerCount = -1;
                     Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
                 }
+            }
+            if (this.online) {
+                final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+                final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
+                final Transmission transmission = new Transmission(transmissionSite, TransmissionType.REQUEST, this.name, "basics", UUID.randomUUID(), "request=online_player_count");
+                transmission.send().whenComplete((onlinePlayerCount, onlinePlayerCountThrowable) -> {
+                    if (onlinePlayerCount.equals("response=request_failed")) {
+                        this.playerCount = 0;
+                    } else {
+                        this.playerCount = Integer.parseInt(onlinePlayerCount.replace("response=", ""));
+                    }
+                });
             }
         });
     }
