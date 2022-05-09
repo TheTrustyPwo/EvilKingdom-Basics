@@ -33,7 +33,6 @@ public class NetworkServer {
         this.name = name;
         this.online = false;
         this.playerCount = -1;
-        this.updateData();
     }
 
     /**
