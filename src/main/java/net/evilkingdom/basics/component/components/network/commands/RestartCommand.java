@@ -13,13 +13,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class RestartCommand extends CommandHandler {
@@ -66,17 +70,19 @@ public class RestartCommand extends CommandHandler {
             }
             return;
         }
-        Arrays.stream(Bukkit.getPluginManager().getPlugins()).toList().stream().filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
+        Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
             try {
                 final Method terminateMethod = dependingPlugin.getClass().getDeclaredMethod("terminate");
                 final Field pluginField = dependingPlugin.getClass().getDeclaredField("plugin");
                 terminateMethod.invoke(pluginField.get(null));
-                Bukkit.getPluginManager().disablePlugin(dependingPlugin);
             } catch (final IllegalAccessException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException exception) {
                 //Pretty much nothing bad happens we get here! :>
             }
         });
-        Bukkit.spigot().restart();
+        Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+            Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> Bukkit.getPluginManager().disablePlugin(dependingPlugin));
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "spigot:restart");
+        }, 100L);
     }
 
     /**
