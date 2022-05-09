@@ -7,8 +7,11 @@ package net.evilkingdom.basics.component.components.network.commands;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.commons.command.abstracts.CommandHandler;
 import net.evilkingdom.commons.command.objects.Command;
+import net.evilkingdom.commons.transmission.TransmissionImplementor;
+import net.evilkingdom.commons.transmission.objects.TransmissionSite;
 import net.evilkingdom.commons.utilities.luckperms.LuckPermsUtilities;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -75,20 +78,27 @@ public class RestartCommand extends CommandHandler {
             final Player player = (Player) sender;
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.restart.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.restart.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.restart.sounds.success.pitch"));
         }
-        Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
-            try {
-                final Method terminateMethod = dependingPlugin.getClass().getDeclaredMethod("terminate");
-                final Field pluginField = dependingPlugin.getClass().getDeclaredField("plugin");
-                terminateMethod.invoke(pluginField.get(null));
-            } catch (final IllegalAccessException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException exception) {
-                exception.printStackTrace();
-                //Pretty much nothing bad happens we get here! :>
+        final String lobbyName = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.lobby.name");
+        final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+        final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
+        if (transmissionSite.getServerName().equals(lobbyName)) {
+            final ArrayList<String> kickMessageList = new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.lobby.kick-message").stream().map(string -> StringUtilities.colorize(string)).collect(Collectors.toList()));
+            final StringBuilder kickMessage = new StringBuilder();
+            for (int i = 0; i < kickMessageList.size(); i++) {
+                if (i == (kickMessageList.size() - 1)) {
+                    kickMessage.append(kickMessageList.get(i));
+                } else {
+                    kickMessage.append(kickMessageList.get(i)).append("\n");
+                }
             }
-        });
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
+        } else {
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> transmissionImplementor.send(onlinePlayer, lobbyName));
+        }
         Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
             Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> Bukkit.getPluginManager().disablePlugin(dependingPlugin));
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "spigot:restart");
-        }, 100L);
+        }, 20L);
     }
 
     /**

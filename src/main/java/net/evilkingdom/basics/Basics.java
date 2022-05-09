@@ -19,20 +19,6 @@ public class Basics extends JavaPlugin {
      * Bukkit's detection for the plugin enabling.
      */
     public void onEnable() {
-        this.initialize();
-    }
-
-    /**
-     * Bukkit's detection for the plugin disabling.
-     */
-    public void onDisable() {
-        this.terminate();
-    }
-
-    /**
-     * Allows you to initialize the plugin.
-     */
-    public void initialize() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics] &aInitializing..."));
         plugin = this;
         this.componentManager = new ComponentManager();
@@ -41,9 +27,9 @@ public class Basics extends JavaPlugin {
     }
 
     /**
-     * Allows you to terminate the plugin.
+     * Bukkit's detection for the plugin disabling.
      */
-    public void terminate() {
+    public void onDisable() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics] &cTerminating..."));
         this.componentManager.terminate();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics] &cTerminated."));

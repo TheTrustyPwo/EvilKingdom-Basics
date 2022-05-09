@@ -113,23 +113,6 @@ public class NetworkComponent {
      */
     private void terminateServers() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating servers..."));
-        final String lobbyName = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.lobby.name");
-        final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-        final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-        if (transmissionSite.getServerName().equals(lobbyName)) {
-            final ArrayList<String> kickMessageList = new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.lobby.kick-message").stream().map(string -> StringUtilities.colorize(string)).collect(Collectors.toList()));
-            final StringBuilder kickMessage = new StringBuilder();
-            for (int i = 0; i < kickMessageList.size(); i++) {
-                if (i == (kickMessageList.size() - 1)) {
-                    kickMessage.append(kickMessageList.get(i));
-                } else {
-                    kickMessage.append(kickMessageList.get(i)).append("\n");
-                }
-            }
-            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
-        } else {
-            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> transmissionImplementor.send(onlinePlayer, lobbyName));
-        }
         if (this.serverTask == null) {
             return;
         }
