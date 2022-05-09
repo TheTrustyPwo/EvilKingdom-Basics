@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class NetworkComponent {
 
     private final Basics plugin;
-    private BukkitTask serverTask;
+    private BukkitTask serverTask, stoppingTask;
     private HashSet<NetworkServer> servers;
 
     /**
@@ -107,6 +107,28 @@ public class NetworkComponent {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing servers..."));
         this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.servers.external").getKeys(false).stream().map(serverName -> new NetworkServer(serverName, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.external." + serverName + ".prettified-name"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.external." + serverName + ".ip"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.servers.external." + serverName + ".port"))).collect(Collectors.toSet()));
         this.serverTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> this.servers.forEach(server -> server.updateData()), 0L, 50L);
+        this.stoppingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> this.servers.forEach(server -> {
+            if (!Bukkit.getServer().isStopping()) {
+                return;
+            }
+            final String lobbyName = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.lobby.name");
+            final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+            final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
+            if (transmissionSite.getServerName().equals(lobbyName)) {
+                final ArrayList<String> kickMessageList = new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.lobby.kick-message").stream().map(string -> StringUtilities.colorize(string)).collect(Collectors.toList()));
+                final StringBuilder kickMessage = new StringBuilder();
+                for (int i = 0; i < kickMessageList.size(); i++) {
+                    if (i == (kickMessageList.size() - 1)) {
+                        kickMessage.append(kickMessageList.get(i));
+                    } else {
+                        kickMessage.append(kickMessageList.get(i)).append("\n");
+                    }
+                }
+                Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
+            } else {
+                Bukkit.getOnlinePlayers().forEach(onlinePlayer -> transmissionImplementor.send(onlinePlayer, lobbyName));
+            }
+        }), 0L, 1L);
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized servers."));
     }
 
@@ -115,10 +137,12 @@ public class NetworkComponent {
      */
     private void terminateServers() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating servers..."));
-        if (this.serverTask == null) {
-            return;
+        if (this.serverTask != null) {
+            this.serverTask.cancel();
         }
-        this.serverTask.cancel();
+        if (this.stoppingTask != null) {
+            this.stoppingTask.cancel();
+        }
         this.servers.clear();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated servers."));
     }
