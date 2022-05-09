@@ -52,7 +52,15 @@ components:
             - "&6&lBasics &7» &eInvalid usage, &etry &6/list&e."
 
           #The message sent when the list is a success.
+          #Variables:
+          # - %global_player_count% ~ The global player count.
+          # - %server_<name>_status% ~ The status of the server (&aOnline/&cOffline).
+          # - %server_<name>_player_count% ~ The player count of the server.
           success:
+            - ""
+            - "&6&lOnline Players &7| &6%global_player_count%"
+            - " &6» &eLobby: &f%server_lobby_status% &7(%server_lobby_player_count%)"
+            - " &6» &ePrison: &f%server_prison_status% &7(%server_prison_player_count%)"
             - ""
 
       #The "/stop" command.

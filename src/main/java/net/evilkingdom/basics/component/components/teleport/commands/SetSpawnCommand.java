@@ -83,10 +83,6 @@ public class SetSpawnCommand extends CommandHandler {
         }
         final Player player = (Player) sender;
         ArrayList<String> tabCompletion = new ArrayList<String>();
-        switch (arguments.length) {
-            case 1 ->  tabCompletion.addAll(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getName()).collect(Collectors.toList()));
-            case 2 -> tabCompletion.addAll(Arrays.asList("gems", "tokens"));
-        }
         return tabCompletion;
     }
 
