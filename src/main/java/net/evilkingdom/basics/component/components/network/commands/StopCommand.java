@@ -65,9 +65,13 @@ public class StopCommand extends CommandHandler {
             if (sender instanceof Player) {
                 final Player player = (Player) sender;
                 player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.stop.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.stop.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.stop.sounds.error.pitch"));
-                return;
             }
             return;
+        }
+        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.stop.messages.success").forEach(string -> sender.sendMessage(StringUtilities.colorize(string)));
+        if (sender instanceof Player) {
+            final Player player = (Player) sender;
+            player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.stop.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.stop.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.stop.sounds.success.pitch"));
         }
         Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
             try {
@@ -80,7 +84,7 @@ public class StopCommand extends CommandHandler {
         });
         Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
             Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> Bukkit.getPluginManager().disablePlugin(dependingPlugin));
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "bukkit:stop");
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop");
         }, 100L);
     }
 

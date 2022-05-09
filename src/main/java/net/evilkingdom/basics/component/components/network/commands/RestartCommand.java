@@ -70,12 +70,18 @@ public class RestartCommand extends CommandHandler {
             }
             return;
         }
+        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.restart.messages.success").forEach(string -> sender.sendMessage(StringUtilities.colorize(string)));
+        if (sender instanceof Player) {
+            final Player player = (Player) sender;
+            player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.restart.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.restart.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.restart.sounds.success.pitch"));
+        }
         Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
             try {
                 final Method terminateMethod = dependingPlugin.getClass().getDeclaredMethod("terminate");
                 final Field pluginField = dependingPlugin.getClass().getDeclaredField("plugin");
                 terminateMethod.invoke(pluginField.get(null));
             } catch (final IllegalAccessException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException exception) {
+                exception.printStackTrace();
                 //Pretty much nothing bad happens we get here! :>
             }
         });
