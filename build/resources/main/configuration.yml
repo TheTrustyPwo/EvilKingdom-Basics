@@ -7,17 +7,20 @@ components:
     #Configuration for shutdowns.
     shutdowns:
 
-      #The lobby server's name.
-      #This is used so when a server that is not the lobby shuts down it'll send them to the lobby, but if it is the lobby it'll just kick them from the proxy.
-      lobby: "lobby"
+      #The lobby server.
+      lobby:
 
-      #The kick message when a server shuts down.
-      kick-message:
-        - ""
-        - "&6&lEvil Kingdom"
-        - ""
-        - "&eThe server has been &cterminated&e."
-        - ""
+        #The lobby server's name.
+        name: "lobby"
+
+        #The kick message when the lobby server shuts down.
+        kick-message:
+          - ""
+          - "&6&lEvil Kingdom"
+          - ""
+          - "&eThe network has gone &coffline&e.",
+          - "&eWe advise you be patient while our wizards get it back up n' running!"
+          - ""
 
     #Configuration for the servers.
     servers:
