@@ -4,26 +4,38 @@ components:
   #Configuration for the Network component.
   network:
 
-    #Configuration for the transmissions (cross-communication).
-    transmissions:
+    #Configuration for shutdowns.
+    shutdowns:
 
-      #Configuration for the servers.
-      servers:
+      #The lobby server's name.
+      #This is used so when a server that is not the lobby shuts down it'll send them to the lobby, but if it is the lobby it'll just kick them from the proxy.
+      lobby: "lobby"
 
-        #The internal server's name.
-        internal: "prison"
+      #The kick message when a server shuts down.
+      kick-message:
+        - ""
+        - "&6&lEvil Kingdom"
+        - ""
+        - "&eThe server has been &cterminated&e."
+        - ""
 
-        #The external servers.
-        external:
+    #Configuration for the servers.
+    servers:
 
-          #The external server's name.
-          lobby:
+      #The internal server's name.
+      internal: "prison"
 
-            #The external server's ip.
-            ip: "174.138.184.86"
+      #The external servers.
+      external:
 
-            #The external server's port.
-            port: 25566
+        #The external server's name.
+        lobby:
+
+          #The external server's ip.
+          ip: "174.138.184.86"
+
+          #The external server's port.
+          port: 25566
 
     #Configuration for staff related stuff.
     staff:
