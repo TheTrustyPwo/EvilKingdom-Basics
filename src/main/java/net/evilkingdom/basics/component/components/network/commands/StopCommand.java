@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class StopCommand extends CommandHandler {
@@ -93,10 +94,12 @@ public class StopCommand extends CommandHandler {
         } else {
             Bukkit.getOnlinePlayers().forEach(onlinePlayer -> transmissionImplementor.send(onlinePlayer, lobbyName));
         }
-        Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
-            Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> Bukkit.getPluginManager().disablePlugin(dependingPlugin));
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop");
-        }, 20L);
+        CompletableFuture.runAsync(() -> {
+            while (!Bukkit.getOnlinePlayers().isEmpty()) {
+                //It won't stop the server until all of the players are offline.
+            }
+            Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop"));
+        });
     }
 
     /**
