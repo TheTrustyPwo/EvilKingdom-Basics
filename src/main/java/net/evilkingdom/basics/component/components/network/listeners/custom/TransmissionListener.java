@@ -43,41 +43,18 @@ public class TransmissionListener extends TransmissionHandler {
             case REQUEST -> {
                 final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
                 final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-                switch (data) {
-                    case "request=online_players" -> {
+                switch (data.replaceFirst("request=", "")) {
+                    case "online_players" -> {
                         final JsonArray jsonArray = new JsonArray();
                         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> jsonArray.add(onlinePlayer.getUniqueId().toString()));
                         final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + jsonArray);
                         transmission.send();
                     }
-                    case "request=online_staff" -> {
+                    case "online_staff" -> {
                         final JsonArray jsonArray = new JsonArray();
                         Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> jsonArray.add(onlinePlayer.getUniqueId().toString()));
                         final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + jsonArray);
                         transmission.send();
-                    }
-                    case "request=online_player_count" -> {
-                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + Bukkit.getOnlinePlayers().size());
-                        transmission.send();
-                    }
-                    case "request=online_staff_count" -> {
-                        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, serverName, siteName, uuid, "response=" + Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).toList().size());
-                        transmission.send();
-                    }
-                }
-            }
-            case MESSAGE -> {
-                final String dataType = data.split("=")[0];
-                switch (dataType) {
-                    case "staff_join" -> {
-                        final UUID staffUUID = UUID.fromString(data.split("=")[1]);
-                        final OfflinePlayer offlineStaff = Bukkit.getOfflinePlayer(staffUUID);
-                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlineStaff.getName()).replace("%server%", serverName)))));
-                    }
-                    case "staff_quit" -> {
-                        final UUID staffUUID = UUID.fromString(data.split("=")[1]);
-                        final OfflinePlayer offlineStaff = Bukkit.getOfflinePlayer(staffUUID);
-                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlineStaff.getName()).replace("%server%", serverName)))));
                     }
                 }
             }
