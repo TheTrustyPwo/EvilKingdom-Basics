@@ -66,24 +66,21 @@ public class NetworkServer {
      * Allows you to update the server's data.
      */
     public void updateData() {
-        final String ip = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.transmissions.servers.external." + this.name + ".ip");
-        final int port = this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.transmissions.servers.external." + this.name + ".port");
-        MojangUtilities.isOnline(ip, port).whenComplete((online, onlineThrowable) -> {
+        final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+        final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
+        final Transmission transmission = new Transmission(transmissionSite, TransmissionType.REQUEST, this.name, "basics", UUID.randomUUID(), "request=online_player_count");
+        transmission.send().whenComplete((onlinePlayerCount, onlinePlayerCountThrowable) -> {
+            final boolean online = !onlinePlayerCount.equals("response=request_failed");
             if (online != this.online) {
                 if (online) {
                     this.online = true;
+                    this.playerCount = Integer.parseInt(onlinePlayerCount.replace("response=", ""));
                     Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
                 } else {
                     this.online = false;
                     this.playerCount = -1;
                     Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
                 }
-            }
-            if (this.online) {
-                final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-                final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-                final Transmission transmission = new Transmission(transmissionSite, TransmissionType.RESPONSE, this.name, "basics", UUID.randomUUID(), "request=online_player_count");
-                transmission.send().whenComplete((playerCount, playerCountThrowable) -> this.playerCount = Integer.parseInt(playerCount));
             }
         });
     }

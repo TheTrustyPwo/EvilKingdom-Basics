@@ -13,17 +13,9 @@ components:
         #The internal server's name.
         internal: "prison"
 
-        #The external servers.
+        #The external server's names.
         external:
-
-          #The external server's name.
-          lobby:
-
-            #The external server's ip.
-            ip: "174.138.184.86"
-
-            #The external server's port.
-            port: 25566
+          - "lobby"
 
     #Configuration for staff related stuff.
     staff:
