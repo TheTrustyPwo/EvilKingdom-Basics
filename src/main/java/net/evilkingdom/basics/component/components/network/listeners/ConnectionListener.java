@@ -47,7 +47,7 @@ public class ConnectionListener implements Listener {
         final Player player = playerJoinEvent.getPlayer();
         PlayerData.get(player.getUniqueId()).whenComplete((playerData, playerDataThrowable) -> playerData.cache());
         Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
-            if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff")) {
+            if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff")) {
                 return;
             }
             final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
