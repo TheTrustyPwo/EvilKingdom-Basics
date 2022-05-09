@@ -67,14 +67,12 @@ public class StopCommand extends CommandHandler {
             }
             return;
         }
-        Commons.getPlugin().getTerminatablePlugins().forEach(terminatablePlugin -> {
+        Arrays.stream(Bukkit.getPluginManager().getPlugins()).toList().stream().filter(plugin -> plugin.getDescription().getDepend().contains("Commons")).forEach(dependingPlugin -> {
             try {
-                final Method terminateMethod = Arrays.stream(terminatablePlugin.getClass().getDeclaredMethods()).filter(method -> method.getName().equals("terminate") && Arrays.stream(method.getParameters()).toList().isEmpty()).findFirst().get();
-                terminateMethod.invoke(null);
-            } catch (final InvocationTargetException | IllegalAccessException exception) {
-                //Should do nothing (hoping the terminatable plugins list was used right).
+                dependingPlugin.getClass().getMethod("getPlugin", null).invoke(null).getClass().getMethod("terminate", null).invoke(null);
+                Bukkit.getPluginManager().disablePlugin(dependingPlugin);
+            } catch (final InvocationTargetException | IllegalAccessException | NoSuchMethodException exception) {
             }
-            Bukkit.getPluginManager().disablePlugin(terminatablePlugin);
         });
         Bukkit.shutdown();
     }
