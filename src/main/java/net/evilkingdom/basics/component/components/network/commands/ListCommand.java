@@ -91,13 +91,13 @@ public class ListCommand extends CommandHandler {
                     final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(serverName)).findFirst().get();
                     playerCount = networkServer.getOnlinePlayerUUIDs().size();
                 }
-                string.replace(statusMatcher.group(), String.valueOf(playerCount));
+                string.replace(playerCountMatcher.group(), String.valueOf(playerCount));
             }
             final Matcher globalPlayerCountMatcher = Pattern.compile("%global_player_count%").matcher(string);
             while (globalPlayerCountMatcher.find()) {
                 final ArrayList<UUID> playerUUIDs = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()));
                 this.plugin.getComponentManager().getNetworkComponent().getServers().forEach(networkServer -> playerUUIDs.addAll(networkServer.getOnlinePlayerUUIDs()));
-                string.replace(statusMatcher.group(), String.valueOf(playerUUIDs.size()));
+                string.replace(globalPlayerCountMatcher.group(), String.valueOf(playerUUIDs.size()));
             }
             player.sendMessage(StringUtilities.colorize(string));
         });
