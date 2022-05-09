@@ -110,6 +110,7 @@ public class NetworkServer {
                 final Transmission transmission = new Transmission(transmissionSite, TransmissionType.REQUEST, this.name, "basics", UUID.randomUUID(), "request=online_players");
                 transmission.send().whenComplete((onlinePlayers, onlinePlayerCountThrowable) -> {
                     final ArrayList<UUID> previousOnlinePlayerUUIDs = this.onlinePlayerUUIDs;
+                    Bukkit.getConsoleSender().sendMessage("op - " + onlinePlayers);
                     if (onlinePlayers.equals("response=request_failed")) {
                         this.onlinePlayerUUIDs.clear();
                     } else {
@@ -117,7 +118,7 @@ public class NetworkServer {
                         jsonArray.forEach(jsonElement -> this.onlinePlayerUUIDs.add(UUID.fromString(jsonElement.getAsString())));
                     }
                     Bukkit.getConsoleSender().sendMessage("previous - " + previousOnlinePlayerUUIDs);
-                    Bukkit.getConsoleSender().sendMessage("current - " + previousOnlinePlayerUUIDs);
+                    Bukkit.getConsoleSender().sendMessage("current - " + this.onlinePlayerUUIDs);
                     previousOnlinePlayerUUIDs.stream().filter(uuid -> !this.onlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> {
                         Bukkit.getConsoleSender().sendMessage("quit - " + offlinePlayer.getName());
                         Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.name)))));
