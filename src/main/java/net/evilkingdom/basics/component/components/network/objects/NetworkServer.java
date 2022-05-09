@@ -17,6 +17,7 @@ import net.evilkingdom.commons.utilities.string.StringUtilities;
 import net.minecraft.server.packs.repository.Pack;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -115,11 +116,17 @@ public class NetworkServer {
             if (online != this.online) {
                 if (online) {
                     this.online = true;
-                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName)))));
+                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
+                        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName))));
+                        onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.status-change.sounds.online.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.online.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.online.pitch"));
+                    });
                 } else {
                     this.online = false;
                     this.onlinePlayerUUIDs.clear();
-                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName)))));
+                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
+                        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName))));
+                        onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.status-change.sounds.offline.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.offline.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.offline.pitch"));
+                    });
                 }
             }
             if (this.online) {
@@ -133,8 +140,14 @@ public class NetworkServer {
                         final JsonArray jsonArray = JsonParser.parseString(onlinePlayers.replaceFirst("response=", "")).getAsJsonArray();
                         jsonArray.forEach(jsonElement -> this.onlinePlayerUUIDs.add(UUID.fromString(jsonElement.getAsString())));
                     }
-                    previousOnlinePlayerUUIDs.stream().filter(uuid -> !this.onlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.prettifiedName))))));
-                    this.onlinePlayerUUIDs.stream().filter(uuid -> !previousOnlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.prettifiedName))))));
+                    previousOnlinePlayerUUIDs.stream().filter(uuid -> !this.onlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
+                        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.prettifiedName))));
+                        onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.connection.sounds.join.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.connection.sounds.join.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.connection.sounds.join.pitch"));
+                    }));
+                    this.onlinePlayerUUIDs.stream().filter(uuid -> !previousOnlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
+                        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.prettifiedName))));
+                        onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.connection.sounds.quit.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.connection.sounds.quit.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.connection.sounds.quit.pitch"));
+                    }));
                 });
             }
         });
