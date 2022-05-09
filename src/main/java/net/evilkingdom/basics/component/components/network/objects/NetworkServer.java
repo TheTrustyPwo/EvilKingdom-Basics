@@ -31,7 +31,7 @@ public class NetworkServer {
 
     private final String name, ip;
     private final int port;
-    private boolean online;
+    private boolean online, lastRequestFailed;
     private final ArrayList<UUID> onlinePlayerUUIDs;
 
     public NetworkServer(final String name, final String ip, final int port) {
@@ -41,6 +41,7 @@ public class NetworkServer {
         this.ip = ip;
         this.port = port;
         this.online = false;
+        this.lastRequestFailed = true;
         this.onlinePlayerUUIDs = new ArrayList<UUID>();
     }
 
@@ -111,12 +112,15 @@ public class NetworkServer {
                 transmission.send().whenComplete((onlinePlayers, onlinePlayerCountThrowable) -> {
                     final ArrayList<UUID> previousOnlinePlayerUUIDs = new ArrayList<UUID>(this.onlinePlayerUUIDs);
                     this.onlinePlayerUUIDs.clear();
+                    this.lastRequestFailed = onlinePlayers.equals("response=request_failed");
                     if (!onlinePlayers.equals("response=request_failed")) {
                         final JsonArray jsonArray = JsonParser.parseString(onlinePlayers.replaceFirst("response=", "")).getAsJsonArray();
                         jsonArray.forEach(jsonElement -> this.onlinePlayerUUIDs.add(UUID.fromString(jsonElement.getAsString())));
                     }
-                    previousOnlinePlayerUUIDs.stream().filter(uuid -> !this.onlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.name))))));
-                    this.onlinePlayerUUIDs.stream().filter(uuid -> !previousOnlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.name))))));
+                    if (!this.lastRequestFailed) {
+                        previousOnlinePlayerUUIDs.stream().filter(uuid -> !this.onlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.name))))));
+                        this.onlinePlayerUUIDs.stream().filter(uuid -> !previousOnlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.name))))));
+                    }
                 });
             }
         });
