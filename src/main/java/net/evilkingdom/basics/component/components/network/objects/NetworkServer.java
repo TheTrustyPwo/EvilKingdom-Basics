@@ -29,15 +29,24 @@ public class NetworkServer {
 
     private final Basics plugin;
 
-    private final String name, ip;
+    private final String name, prettifiedName, ip;
     private final int port;
     private boolean online;
     private final ArrayList<UUID> onlinePlayerUUIDs;
 
-    public NetworkServer(final String name, final String ip, final int port) {
+    /**
+     * Allows you to create a Network Server.
+     *
+     * @param name ~ The network server's name.
+     * @param prettifiedName ~ The network server's prettified name.
+     * @param ip ~ The network server's ip.
+     * @param port ~ The network server's port.
+     */
+    public NetworkServer(final String name, final String prettifiedName, final String ip, final int port) {
         this.plugin = Basics.getPlugin();
 
         this.name = name;
+        this.prettifiedName = prettifiedName;
         this.ip = ip;
         this.port = port;
         this.online = false;
@@ -72,6 +81,15 @@ public class NetworkServer {
     }
 
     /**
+     * Allows you to retrieve the server's prettified name.
+     *
+     * @return The server's prettified name.
+     */
+    public String getPrettifiedName() {
+        return this.prettifiedName;
+    }
+
+    /**
      * Allows you to retrieve the server's ip.
      *
      * @return The server's ip.
@@ -97,11 +115,11 @@ public class NetworkServer {
             if (online != this.online) {
                 if (online) {
                     this.online = true;
-                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
+                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName)))));
                 } else {
                     this.online = false;
                     this.onlinePlayerUUIDs.clear();
-                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.name)))));
+                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName)))));
                 }
             }
             if (this.online) {
@@ -115,8 +133,8 @@ public class NetworkServer {
                         final JsonArray jsonArray = JsonParser.parseString(onlinePlayers.replaceFirst("response=", "")).getAsJsonArray();
                         jsonArray.forEach(jsonElement -> this.onlinePlayerUUIDs.add(UUID.fromString(jsonElement.getAsString())));
                     }
-                    previousOnlinePlayerUUIDs.stream().filter(uuid -> !this.onlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.name))))));
-                    this.onlinePlayerUUIDs.stream().filter(uuid -> !previousOnlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.name))))));
+                    previousOnlinePlayerUUIDs.stream().filter(uuid -> !this.onlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.quit.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.prettifiedName))))));
+                    this.onlinePlayerUUIDs.stream().filter(uuid -> !previousOnlinePlayerUUIDs.contains(uuid)).map(uuid -> Bukkit.getOfflinePlayer(uuid)).forEach(offlinePlayer -> Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.connection.messages.join.external").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%server%", this.prettifiedName))))));
                 });
             }
         });

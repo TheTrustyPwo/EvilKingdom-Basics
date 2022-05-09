@@ -125,14 +125,23 @@ components:
     #Configuration for the servers.
     servers:
 
-      #The internal server's name.
-      internal: "prison"
+      #The internal server.
+      internal:
+
+        #The internal server's name.
+        name: "prison"
+
+        #The internal server's prettified name.
+        prettified-name: "Prison"
 
       #The external servers.
       external:
 
         #The external server's name.
         lobby:
+
+          #The external server's prettified name.
+          prettified-name: "Lobby"
 
           #The external server's ip.
           ip: "174.138.184.86"
