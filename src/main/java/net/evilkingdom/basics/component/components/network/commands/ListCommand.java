@@ -83,7 +83,7 @@ public class ListCommand extends CommandHandler {
             }
             final Matcher playerCountMatcher = Pattern.compile("%server_([a-zA-Z0-9]*)_player_count%").matcher(string);
             while (playerCountMatcher.find()) {
-                final String serverName = playerCountMatcher.group().replaceFirst("%server_", "").replaceFirst("_status%", "");
+                final String serverName = playerCountMatcher.group().replaceFirst("%server_", "").replaceFirst("_player_count%", "");
                 int playerCount;
                 if (serverName.equals(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.name"))) {
                     playerCount = Bukkit.getOnlinePlayers().size();
