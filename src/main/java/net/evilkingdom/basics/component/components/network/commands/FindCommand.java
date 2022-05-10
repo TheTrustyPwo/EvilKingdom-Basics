@@ -111,12 +111,14 @@ public class FindCommand extends CommandHandler {
         }
         final Player player = (Player) sender;
         ArrayList<String> tabCompletion = new ArrayList<String>();
-        switch (arguments.length) {
-            case 1 -> {
-                final ArrayList<UUID> playerUUIDs = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()));
-                this.plugin.getComponentManager().getNetworkComponent().getServers().forEach(networkServer -> playerUUIDs.addAll(networkServer.getOnlinePlayerUUIDs()));
-                playerUUIDs.remove(player.getUniqueId());
-                tabCompletion.addAll(playerUUIDs.stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()));
+        if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.find")) {
+            switch (arguments.length) {
+                case 1 -> {
+                    final ArrayList<UUID> playerUUIDs = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()));
+                    this.plugin.getComponentManager().getNetworkComponent().getServers().forEach(networkServer -> playerUUIDs.addAll(networkServer.getOnlinePlayerUUIDs()));
+                    playerUUIDs.remove(player.getUniqueId());
+                    tabCompletion.addAll(playerUUIDs.stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()));
+                }
             }
         }
         return tabCompletion;

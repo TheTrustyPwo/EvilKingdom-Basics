@@ -92,14 +92,7 @@ public class SendCommand extends CommandHandler {
             }
             final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
             final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-            final ArrayList<String> serverNames = new ArrayList<String>(this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).map(networkServer -> networkServer.getName()).toList());
-            serverNames.add(transmissionSite.getServerName());
             final String targetServerName = arguments[1].toLowerCase();
-            if (!serverNames.contains(targetServerName)) {
-                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.invalid-server.not-located").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%server%", arguments[1]))));
-                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.send.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.pitch"));
-                return;
-            }
             if (targetServerName.equals(transmissionSite.getServerName())) {
                 if (Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()).contains(offlineTarget.getUniqueId())) {
                     this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.invalid-send").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%target%", offlineTarget.getName()).replace("%server%", this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.prettified-name")))));
@@ -162,17 +155,19 @@ public class SendCommand extends CommandHandler {
         }
         final Player player = (Player) sender;
         ArrayList<String> tabCompletion = new ArrayList<String>();
-        switch (arguments.length) {
-            case 1 -> {
-                final ArrayList<UUID> playerUUIDs = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()));
-                this.plugin.getComponentManager().getNetworkComponent().getServers().forEach(networkServer -> playerUUIDs.addAll(networkServer.getOnlinePlayerUUIDs()));
-                playerUUIDs.remove(player.getUniqueId());
-                tabCompletion.addAll(playerUUIDs.stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()));
-            }
-            case 2 -> {
-                final ArrayList<String> serverNames = new ArrayList<String>(this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).map(networkServer -> networkServer.getName()).toList());
-                serverNames.add(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.name"));
-                tabCompletion.addAll(serverNames);
+        if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.send")) {
+            switch (arguments.length) {
+                case 1 -> {
+                    final ArrayList<UUID> playerUUIDs = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()));
+                    this.plugin.getComponentManager().getNetworkComponent().getServers().forEach(networkServer -> playerUUIDs.addAll(networkServer.getOnlinePlayerUUIDs()));
+                    playerUUIDs.remove(player.getUniqueId());
+                    tabCompletion.addAll(playerUUIDs.stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()));
+                }
+                case 2 -> {
+                    final ArrayList<String> serverNames = new ArrayList<String>(this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).map(networkServer -> networkServer.getName()).toList());
+                    serverNames.add(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.name"));
+                    tabCompletion.addAll(serverNames);
+                }
             }
         }
         return tabCompletion;
