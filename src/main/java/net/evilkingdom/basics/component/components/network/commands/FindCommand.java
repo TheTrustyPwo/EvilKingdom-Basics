@@ -16,6 +16,7 @@ import net.evilkingdom.commons.transmission.enums.TransmissionType;
 import net.evilkingdom.commons.transmission.objects.Transmission;
 import net.evilkingdom.commons.transmission.objects.TransmissionServer;
 import net.evilkingdom.commons.transmission.objects.TransmissionSite;
+import net.evilkingdom.commons.utilities.luckperms.LuckPermsUtilities;
 import net.evilkingdom.commons.utilities.mojang.MojangUtilities;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
 import org.bukkit.Bukkit;
@@ -62,6 +63,11 @@ public class FindCommand extends CommandHandler {
             return;
         }
         final Player player = (Player) sender;
+        if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.find")) {
+            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.find.messages.invalid-permissions").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
+            player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.find.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.find.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.find.sounds.error.pitch"));
+            return;
+        }
         if (arguments.length != 1) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.find.messages.invalid-usage").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.find.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.find.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.find.sounds.error.pitch"));
