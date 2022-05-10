@@ -44,9 +44,9 @@ public class TransmissionListener extends TransmissionHandler {
      * @param data ~ The transmission's data.
      */
     public void onReceive(final TransmissionServer server, final String siteName, final TransmissionType type, final UUID uuid, final String data) {
+        final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
         switch (type) {
             case REQUEST -> {
-                final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
                 final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
                 switch (data.replaceFirst("request=", "")) {
                     case "online_players" -> {
@@ -76,6 +76,11 @@ public class TransmissionListener extends TransmissionHandler {
                         final float volume = Float.parseFloat(data.split("=")[1].split("~")[1].split(":")[1]);
                         final float pitch = Float.parseFloat(data.split("=")[1].split("~")[1].split(":")[2]);
                         player.playSound(player.getLocation(), sound, volume, pitch);
+                    }
+                    case "player_send" -> {
+                        final Player player = Bukkit.getPlayerExact(data.split("=")[1].split("~")[0]);
+                        final String sendServer = data.split("=")[1].split("~")[1].split(":")[0];
+                        transmissionImplementor.send(player, sendServer);
                     }
                 }
             }
