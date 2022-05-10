@@ -109,16 +109,16 @@ public class NetworkServer {
             NetworkServerStatus status = null;
             switch (pterodactylStatus.get()) {
                 case "starting" -> status = NetworkServerStatus.STARTING;
-                case "online" -> status = NetworkServerStatus.ONLINE;
+                case "running" -> status = NetworkServerStatus.ONLINE;
                 case "offline" -> status = NetworkServerStatus.OFFLINE;
             }
             if (status != this.status) {
                 this.status = status;
                 String preFormattedStatus = null;
                 switch (status) {
-                    case ONLINE -> preFormattedStatus = "&aOnline";
-                    case STARTING -> preFormattedStatus = "&6Starting";
-                    case OFFLINE -> preFormattedStatus = "&cOffline";
+                    case ONLINE -> preFormattedStatus = "&aonline";
+                    case STARTING -> preFormattedStatus = "&6starting";
+                    case OFFLINE -> preFormattedStatus = "&coffline";
                 }
                 final String formattedStatus = preFormattedStatus;
                 Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
