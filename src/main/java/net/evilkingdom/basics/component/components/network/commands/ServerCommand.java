@@ -125,13 +125,14 @@ public class ServerCommand extends CommandHandler {
             return new ArrayList<String>();
         }
         final Player player = (Player) sender;
+        if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.server")) {
+            return new ArrayList<String>();
+        }
         ArrayList<String> tabCompletion = new ArrayList<String>();
-        if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.server")) {
-            switch (arguments.length) {
-                case 1 -> {
-                    final ArrayList<String> serverNames = new ArrayList<String>(this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).map(networkServer -> networkServer.getName()).toList());
-                    tabCompletion.addAll(serverNames);
-                }
+        switch (arguments.length) {
+            case 1 -> {
+                final ArrayList<String> serverNames = new ArrayList<String>(this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).map(networkServer -> networkServer.getName()).toList());
+                tabCompletion.addAll(serverNames);
             }
         }
         return tabCompletion;

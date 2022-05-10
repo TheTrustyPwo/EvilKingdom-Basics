@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.teleport.commands;
 
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.data.objects.SelfData;
+import net.evilkingdom.basics.component.components.network.enums.NetworkServerStatus;
 import net.evilkingdom.commons.command.abstracts.CommandHandler;
 import net.evilkingdom.commons.command.objects.Command;
 import net.evilkingdom.commons.utilities.luckperms.LuckPermsUtilities;
@@ -99,9 +100,12 @@ public class SpawnCommand extends CommandHandler {
             return new ArrayList<String>();
         }
         final Player player = (Player) sender;
+        if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.server")) {
+            return new ArrayList<String>();
+        }
         ArrayList<String> tabCompletion = new ArrayList<String>();
         switch (arguments.length) {
-            case 1 ->  tabCompletion.addAll(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getName()).collect(Collectors.toList()));
+            case 1 -> tabCompletion.addAll(Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> onlinePlayer.getUniqueId() != player.getUniqueId()).map(onlinePlayer -> onlinePlayer.getName()).collect(Collectors.toList()));
         }
         return tabCompletion;
     }

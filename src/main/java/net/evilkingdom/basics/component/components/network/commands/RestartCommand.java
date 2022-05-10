@@ -148,12 +148,7 @@ public class RestartCommand extends CommandHandler {
      */
     @Override
     public ArrayList<String> onTabCompletion(final CommandSender sender, final String[] arguments) {
-        if (!(sender instanceof Player)) {
-            return new ArrayList<String>();
-        }
-        final Player player = (Player) sender;
-        ArrayList<String> tabCompletion = new ArrayList<String>();
-        return tabCompletion;
+        return new ArrayList<String>();
     }
 
 }
