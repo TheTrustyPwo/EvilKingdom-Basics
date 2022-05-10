@@ -110,7 +110,7 @@ public class NetworkServer {
             switch (pterodactylStatus.get()) {
                 case "starting" -> status = NetworkServerStatus.STARTING;
                 case "online" -> status = NetworkServerStatus.ONLINE;
-                case "stopping" -> status = NetworkServerStatus.OFFLINE;
+                case "offline" -> status = NetworkServerStatus.OFFLINE;
             }
             if (status != this.status) {
                 this.status = status;

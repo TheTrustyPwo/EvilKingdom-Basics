@@ -300,15 +300,15 @@ components:
           - "&7&o(We advise you be patient while our wizards get it back up n' running!)"
           - ""
 
-      #The configuration for pterodactyl.
-      #All of the transmissions are handled using this information and plugin if it fails, the shitshows will come.
-      pterodactyl:
+    #The configuration for pterodactyl.
+    #All of the transmissions are handled using this information and plugin if it fails, the shitshows will come.
+    pterodactyl:
 
-        #The url of the panel.
-        url: "panel.evilkingdom.net"
+      #The url of the panel.
+      url: "panel.evilkingdom.net"
 
-        #A client token that has administrator rights on the panel.
-        token: "dvjeK06biYPAm7VAp6TgeM9dZoEOgJH99KvIDatAokbGzy9Q"
+      #A client token that has administrator rights on the panel.
+      token: "dvjeK06biYPAm7VAp6TgeM9dZoEOgJH99KvIDatAokbGzy9Q"
 
     #Configuration for the servers.
     servers:
