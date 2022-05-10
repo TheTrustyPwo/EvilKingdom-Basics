@@ -305,7 +305,7 @@ components:
       pterodactyl:
 
         #The url of the panel.
-        url: "https://panel.evilkingdom.net"
+        url: "panel.evilkingdom.net"
 
         #A client token that has administrator rights on the panel.
         token: "dvjeK06biYPAm7VAp6TgeM9dZoEOgJH99KvIDatAokbGzy9Q"
