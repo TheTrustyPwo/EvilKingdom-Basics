@@ -5,10 +5,7 @@ package net.evilkingdom.basics.component.components.network;
  */
 
 import net.evilkingdom.basics.Basics;
-import net.evilkingdom.basics.component.components.network.commands.ListCommand;
-import net.evilkingdom.basics.component.components.network.commands.RestartCommand;
-import net.evilkingdom.basics.component.components.network.commands.SendCommand;
-import net.evilkingdom.basics.component.components.network.commands.StopCommand;
+import net.evilkingdom.basics.component.components.network.commands.*;
 import net.evilkingdom.basics.component.components.network.listeners.ConnectionListener;
 import net.evilkingdom.basics.component.components.network.listeners.custom.TransmissionListener;
 import net.evilkingdom.basics.component.components.network.objects.NetworkServer;
@@ -69,6 +66,7 @@ public class NetworkComponent {
         new RestartCommand().register();
         new ListCommand().register();
         new SendCommand().register();
+        new FindCommand().register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aRegistered commands."));
     }
 
