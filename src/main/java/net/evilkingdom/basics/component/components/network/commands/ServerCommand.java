@@ -129,14 +129,7 @@ public class ServerCommand extends CommandHandler {
         if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.server")) {
             switch (arguments.length) {
                 case 1 -> {
-                    final ArrayList<UUID> playerUUIDs = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()));
-                    this.plugin.getComponentManager().getNetworkComponent().getServers().forEach(networkServer -> playerUUIDs.addAll(networkServer.getOnlinePlayerUUIDs()));
-                    playerUUIDs.remove(player.getUniqueId());
-                    tabCompletion.addAll(playerUUIDs.stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()));
-                }
-                case 2 -> {
                     final ArrayList<String> serverNames = new ArrayList<String>(this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).map(networkServer -> networkServer.getName()).toList());
-                    serverNames.add(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.name"));
                     tabCompletion.addAll(serverNames);
                 }
             }
