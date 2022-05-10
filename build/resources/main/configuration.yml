@@ -52,7 +52,15 @@ components:
             - "&6&lBasics &7» &eInvalid usage, &etry &6/list&e."
 
           #The message sent when the list is a success.
+          #Variables:
+          # - %global_player_count% ~ The global player count.
+          # - %server_<name>_status% ~ The status of the server (it's automatically colored).
+          # - %server_<name>_player_count% ~ The player count of the server.
           success:
+            - ""
+            - "&6&lOnline Players &7| &6%global_player_count%"
+            - " &6» &eLobby: &f%server_lobby_status% &7(%server_lobby_player_count%)"
+            - " &6» &ePrison: &f%server_prison_status% &7(%server_prison_player_count%)"
             - ""
 
       #The "/stop" command.
@@ -151,6 +159,103 @@ components:
           success:
             - "&6&lBasics &7» &eRestarting the server..."
 
+      #The "/send" command.
+      #The permission for this command is "basics.network.commands.send".
+      send:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the send is a success.
+          success:
+
+            #The sound sent to the player.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the target.
+            target:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/send <player> <server>&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the targeted server is invalid.
+          #Variables:
+          # - %server% ~ The targeted server.
+          invalid-server:
+
+            #The message sent when the targeted server could not be located (not a network server).
+            not-located:
+              - "&6&lBasics &7» &eInvalid server, &6%server% &efailed to be located."
+
+            #The message sent when the targeted server is not online.
+            offline:
+              - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently &coffline&e."
+
+          #The message sent when the targeted player is invalid (not online).
+          #Variables:
+          # - %player% ~ The targeted player.
+          invalid-player:
+            - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
+
+          #The message sent when the send is a success.
+          #Variables:
+          # - %player% ~ The targeted player.
+          # - %server% ~ The targeted server.
+          success:
+
+            #The message sent to the player.
+            player:
+              - "&6&lBasics &7» &eYou have sent &6%player% &eto &6%server%&e."
+
+            #The message sent to the target (when they have completed connecting to the target server).
+            target:
+              - "&6&lBasics &7» &eYou have been sent to &6%server% &eby &6%player%&e."
+
     #Configuration for shutdowns.
     shutdowns:
 
@@ -160,14 +265,50 @@ components:
         #The lobby server's name.
         name: "lobby"
 
-        #The kick message when the lobby server shuts down.
-        kick-message:
+      #The kick when the server shuts down.
+      kick:
+
+        #The kick if the server is not the lobby.
+        #It will only preform the tasks below if the lobby server is online, if not it'll just default to the lobby's kick.
+        server:
+
+            #The sound sent when reaching the lobby.
+            sounds:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 0.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The message sent when reaching the lobby.
+            message:
+              - "&6&lBasics &7» &eThe server you were previously on has gone &coffline&e."
+              - "&7&o(We advise you be patient while our wizards get it back up n' running!)"
+
+        #The kick if the server is the lobby.
+        #This is a direct boot off the network (no recovering the player).
+        lobby:
           - ""
           - "&6&lEvil Kingdom"
           - ""
           - "&eThe network has gone &coffline&e."
-          - "&eWe advise you be patient while our wizards get it back up n' running!"
+          - "&7&o(We advise you be patient while our wizards get it back up n' running!)"
           - ""
+
+      #The configuration for pterodactyl.
+      #All of the transmissions are handled using this information and plugin if it fails, the shitshows will come.
+      pterodactyl:
+
+        #The url of the panel.
+        url: "https://panel.evilkingdom.net"
+
+        #A client token that has administrator rights on the panel.
+        token: "dvjeK06biYPAm7VAp6TgeM9dZoEOgJH99KvIDatAokbGzy9Q"
 
     #Configuration for the servers.
     servers:
@@ -190,20 +331,17 @@ components:
           #The external server's prettified name.
           prettified-name: "Lobby"
 
-          #The external server's ip.
-          ip: "174.138.184.86"
-
-          #The external server's port.
-          port: 25566
+          #The external server's pterodactyl server id.
+          pterodactyl-server-id: "8a447aea"
 
     #Configuration for staff related stuff.
+    #This only directly affects players with the permission "basics.network.staff".
     staff:
 
       #Configuration for staff connections.
       connection:
 
         #The messages for staff connections.
-        #These messages are only sent to players with the permission "basics.network.staff".
         #Variables:
         # - %player% ~ The player.
         # - %server% ~ The server.
@@ -263,55 +401,32 @@ components:
       #Configuration for server status changes.
       server-status:
 
-        #The messages for server status changes.
-        #These messages are only sent to players with the permission "basics.network.staff".
+        #The message sent when a server status changes.
         #Variables:
         # - %server% ~ The server.
-        messages:
+        # - %server% ~ The server's status (it's automatically colored).
+        message:
+          - "&6&lBasics &7» &6%server% &eis now %server%&e."
 
-          #The message sent when a server goes online.
-          online:
-            - "&6&lBasics &7» &6%server% &eis now &aonline&e."
+        #The sound sent when a server status changes.
+        sound:
 
-          #The message sent when a server goes offline.
-          offline:
-            - "&6&lBasics &7» &6%server% &eis now &coffline&e."
+          #The sound.
+          #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+          sound: "BLOCK_NOTE_BLOCK_BIT"
 
-        #The messages for server status changes.
-        sounds:
+          #The sound's pitch.
+          pitch: 1.0
 
-          #The sound sent when a server goes online.
-          online:
-
-            #The sound.
-            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
-            sound: "BLOCK_NOTE_BLOCK_BIT"
-
-            #The sound's pitch.
-            pitch: 1.0
-
-            #The sound's volume.
-            volume: 1.0
-
-          #The sound sent when a server goes offline.
-          offline:
-
-            #The sound.
-            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
-            sound: "BLOCK_NOTE_BLOCK_BIT"
-
-            #The sound's pitch.
-            pitch: 0.5
-
-            #The sound's volume.
-            volume: 1.0
+          #The sound's volume.
+          volume: 1.0
 
 
   #Configuration for the Data component.
   data:
 
     #The configuration for the database.
-    #All of the data for this plugin is stored via MongoDB and if this fails, the plugin will disable itself.
+    #All of the data for this plugin is stored using this information and if this fails, the plugin will disable itself.
     database:
 
       #The name of the database.

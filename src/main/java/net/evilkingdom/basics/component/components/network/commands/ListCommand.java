@@ -68,15 +68,15 @@ public class ListCommand extends CommandHandler {
             final Matcher statusMatcher = Pattern.compile("%server_([a-zA-Z0-9]*)_status%").matcher(string);
             while (statusMatcher.find()) {
                 final String serverName = statusMatcher.group().replaceFirst("%server_", "").replaceFirst("_status%", "");
-                String status;
+                String status = null;
                 if (serverName.equals(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.name"))) {
                     status = "&aOnline";
                 } else {
                     final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(serverName)).findFirst().get();
-                    if (networkServer.isOnline()) {
-                        status = "&aOnline";
-                    } else {
-                        status = "&cOffline";
+                    switch (networkServer.getStatus()) {
+                        case ONLINE -> status = "&aOnline";
+                        case STARTING -> status = "&6Starting";
+                        case OFFLINE -> status = "&cOffline";
                     }
                 }
                 string = string.replace(statusMatcher.group(), status);

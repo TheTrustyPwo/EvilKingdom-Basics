@@ -7,12 +7,15 @@ package net.evilkingdom.basics.component.components.network.objects;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import net.evilkingdom.basics.Basics;
+import net.evilkingdom.basics.component.components.network.enums.NetworkServerStatus;
 import net.evilkingdom.commons.transmission.TransmissionImplementor;
 import net.evilkingdom.commons.transmission.enums.TransmissionType;
 import net.evilkingdom.commons.transmission.objects.Transmission;
+import net.evilkingdom.commons.transmission.objects.TransmissionServer;
 import net.evilkingdom.commons.transmission.objects.TransmissionSite;
 import net.evilkingdom.commons.utilities.luckperms.LuckPermsUtilities;
 import net.evilkingdom.commons.utilities.mojang.MojangUtilities;
+import net.evilkingdom.commons.utilities.pterodactyl.PterodactylUtilities;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
 import net.minecraft.server.packs.repository.Pack;
 import org.bukkit.Bukkit;
@@ -30,9 +33,8 @@ public class NetworkServer {
 
     private final Basics plugin;
 
-    private final String name, prettifiedName, ip;
-    private final int port;
-    private boolean online;
+    private final String name, prettifiedName, pterodactylId;
+    private NetworkServerStatus status;
     private final ArrayList<UUID> onlinePlayerUUIDs;
 
     /**
@@ -40,99 +42,93 @@ public class NetworkServer {
      *
      * @param name ~ The network server's name.
      * @param prettifiedName ~ The network server's prettified name.
-     * @param ip ~ The network server's ip.
-     * @param port ~ The network server's port.
+     * @param pterodactylId ~ The network server's pterodactyl server id.
      */
-    public NetworkServer(final String name, final String prettifiedName, final String ip, final int port) {
+    public NetworkServer(final String name, final String prettifiedName, final String pterodactylId) {
         this.plugin = Basics.getPlugin();
 
         this.name = name;
         this.prettifiedName = prettifiedName;
-        this.ip = ip;
-        this.port = port;
-        this.online = false;
+        this.pterodactylId = pterodactylId;
+        this.status = NetworkServerStatus.OFFLINE;
         this.onlinePlayerUUIDs = new ArrayList<UUID>();
     }
 
     /**
-     * Allows you to retrieve the server's online player uuids.
+     * Allows you to retrieve the network server's online player uuids.
      *
-     * @return The server's online player uuids.
+     * @return The network server's online player uuids.
      */
     public ArrayList<UUID> getOnlinePlayerUUIDs() {
         return this.onlinePlayerUUIDs;
     }
 
     /**
-     * Allows you to retrieve the if the server is online.
+     * Allows you to retrieve the network server's status.
      *
-     * @return If the server is online.
+     * @return The network server's status.
      */
-    public boolean isOnline() {
-        return this.online;
+    public NetworkServerStatus getStatus() {
+        return this.status;
     }
 
     /**
-     * Allows you to retrieve the server's name.
+     * Allows you to retrieve the network server's name.
      *
-     * @return The server's name.
+     * @return The network server's name.
      */
     public String getName() {
         return this.name;
     }
 
     /**
-     * Allows you to retrieve the server's prettified name.
+     * Allows you to retrieve the network server's prettified name.
      *
-     * @return The server's prettified name.
+     * @return The network server's prettified name.
      */
     public String getPrettifiedName() {
         return this.prettifiedName;
     }
 
     /**
-     * Allows you to retrieve the server's ip.
+     * Allows you to retrieve the network server's pterodactyl server id.
      *
-     * @return The server's ip.
+     * @return The network server's pterodactyl server id.
      */
-    public String getIP() {
-        return this.ip;
-    }
-
-    /**
-     * Allows you to retrieve the server's port.
-     *
-     * @return The server's port.
-     */
-    public Integer getPort() {
-        return this.port;
+    public String getPterodactylId() {
+        return this.pterodactylId;
     }
 
     /**
      * Allows you to update the server's data.
      */
     public void updateData() {
-        MojangUtilities.isOnline(this.ip, this.port).whenComplete((online, onlineThrowable) -> {
-            if (online != this.online) {
-                if (online) {
-                    this.online = true;
-                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
-                        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.online").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName))));
-                        onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.status-change.sounds.online.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.online.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.online.pitch"));
-                    });
-                } else {
-                    this.online = false;
-                    this.onlinePlayerUUIDs.clear();
-                    Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
-                        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.messages.offline").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName))));
-                        onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.status-change.sounds.offline.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.offline.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sounds.offline.pitch"));
-                    });
-                }
+        final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+        final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
+        PterodactylUtilities.getStatus(transmissionSite.getPterodactylURL(), transmissionSite.getPterodactylToken(), this.pterodactylId).whenComplete((pterodactylStatus, pterodactylStatusThrowable) -> {
+            NetworkServerStatus status = null;
+            switch (pterodactylStatus.get()) {
+                case "starting" -> status = NetworkServerStatus.STARTING;
+                case "online" -> status = NetworkServerStatus.ONLINE;
+                case "stopping" -> status = NetworkServerStatus.OFFLINE;
             }
-            if (this.online) {
-                final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-                final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-                final Transmission transmission = new Transmission(transmissionSite, TransmissionType.REQUEST, this.name, "basics", UUID.randomUUID(), "request=online_players");
+            if (status != this.status) {
+                this.status = status;
+                String preFormattedStatus = null;
+                switch (status) {
+                    case ONLINE -> preFormattedStatus = "&aOnline";
+                    case STARTING -> preFormattedStatus = "&6Starting";
+                    case OFFLINE -> preFormattedStatus = "&cOffline";
+                }
+                final String formattedStatus = preFormattedStatus;
+                Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
+                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.message").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName).replace("%status%", formattedStatus))));
+                    onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.status-change.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sound.pitch"));
+                });
+            }
+            if (this.status == NetworkServerStatus.ONLINE) {
+                final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(this.name)).findFirst().get();
+                final Transmission transmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.REQUEST, UUID.randomUUID(), "request=online_players");
                 transmission.send().whenComplete((onlinePlayers, onlinePlayerCountThrowable) -> {
                     final ArrayList<UUID> previousOnlinePlayerUUIDs = new ArrayList<UUID>(this.onlinePlayerUUIDs);
                     this.onlinePlayerUUIDs.clear();

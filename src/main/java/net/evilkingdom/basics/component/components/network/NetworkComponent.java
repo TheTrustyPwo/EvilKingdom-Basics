@@ -7,6 +7,7 @@ package net.evilkingdom.basics.component.components.network;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.network.commands.ListCommand;
 import net.evilkingdom.basics.component.components.network.commands.RestartCommand;
+import net.evilkingdom.basics.component.components.network.commands.SendCommand;
 import net.evilkingdom.basics.component.components.network.commands.StopCommand;
 import net.evilkingdom.basics.component.components.network.listeners.ConnectionListener;
 import net.evilkingdom.basics.component.components.network.listeners.custom.TransmissionListener;
@@ -14,6 +15,7 @@ import net.evilkingdom.basics.component.components.network.objects.NetworkServer
 import net.evilkingdom.commons.transmission.TransmissionImplementor;
 import net.evilkingdom.commons.transmission.enums.TransmissionType;
 import net.evilkingdom.commons.transmission.objects.Transmission;
+import net.evilkingdom.commons.transmission.objects.TransmissionServer;
 import net.evilkingdom.commons.transmission.objects.TransmissionSite;
 import net.evilkingdom.commons.utilities.string.StringUtilities;
 import net.kyori.adventure.text.Component;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 public class NetworkComponent {
 
     private final Basics plugin;
-    private BukkitTask serverTask, stoppingTask;
+    private BukkitTask serverTask;
     private HashSet<NetworkServer> servers;
 
     /**
@@ -66,6 +68,7 @@ public class NetworkComponent {
         new StopCommand().register();
         new RestartCommand().register();
         new ListCommand().register();
+        new SendCommand().register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aRegistered commands."));
     }
 
@@ -83,7 +86,11 @@ public class NetworkComponent {
      */
     private void initializeTransmissions() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing transmissions..."));
-        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.name"), "basics");
+        final TransmissionSite transmissionSite = new TransmissionSite(this.plugin, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.name"), "basics", this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.pterodactyl.url"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.pterodactyl.token"));
+        this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.servers.external").getKeys(false).forEach(serverName -> {
+            final TransmissionServer transmissionServer = new TransmissionServer(transmissionSite, serverName, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.external." + serverName + ".pterodactyl-server-id"));
+            transmissionServer.register();
+        });
         transmissionSite.setHandler(new TransmissionListener());
         transmissionSite.register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized transmissions."));
@@ -105,30 +112,8 @@ public class NetworkComponent {
      */
     private void initializeServers() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing servers..."));
-        this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.servers.external").getKeys(false).stream().map(serverName -> new NetworkServer(serverName, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.external." + serverName + ".prettified-name"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.external." + serverName + ".ip"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.servers.external." + serverName + ".port"))).collect(Collectors.toSet()));
+        this.servers = new HashSet<NetworkServer>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.servers.external").getKeys(false).stream().map(serverName -> new NetworkServer(serverName, this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.external." + serverName + ".prettified-name"), this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.external." + serverName + ".pterodactyl-server-id"))).collect(Collectors.toSet()));
         this.serverTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> this.servers.forEach(server -> server.updateData()), 0L, 50L);
-        this.stoppingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> this.servers.forEach(server -> {
-            if (!Bukkit.getServer().isStopping()) {
-                return;
-            }
-            final String lobbyName = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.lobby.name");
-            final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
-            final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-            if (transmissionSite.getServerName().equals(lobbyName)) {
-                final ArrayList<String> kickMessageList = new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.lobby.kick-message").stream().map(string -> StringUtilities.colorize(string)).collect(Collectors.toList()));
-                final StringBuilder kickMessage = new StringBuilder();
-                for (int i = 0; i < kickMessageList.size(); i++) {
-                    if (i == (kickMessageList.size() - 1)) {
-                        kickMessage.append(kickMessageList.get(i));
-                    } else {
-                        kickMessage.append(kickMessageList.get(i)).append("\n");
-                    }
-                }
-                Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
-            } else {
-                Bukkit.getOnlinePlayers().forEach(onlinePlayer -> transmissionImplementor.send(onlinePlayer, lobbyName));
-            }
-        }), 0L, 1L);
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized servers."));
     }
 
@@ -139,9 +124,6 @@ public class NetworkComponent {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating servers..."));
         if (this.serverTask != null) {
             this.serverTask.cancel();
-        }
-        if (this.stoppingTask != null) {
-            this.stoppingTask.cancel();
         }
         this.servers.clear();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated servers."));
