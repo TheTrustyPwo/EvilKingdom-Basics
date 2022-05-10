@@ -404,9 +404,9 @@ components:
         #The message sent when a server status changes.
         #Variables:
         # - %server% ~ The server.
-        # - %server% ~ The server's status (it's automatically colored).
+        # - %status% ~ The server's status (it's automatically colored).
         message:
-          - "&6&lBasics &7» &6%server% &eis now %server%&e."
+          - "&6&lBasics &7» &6%server% &eis now %status%&e."
 
         #The sound sent when a server status changes.
         sound:

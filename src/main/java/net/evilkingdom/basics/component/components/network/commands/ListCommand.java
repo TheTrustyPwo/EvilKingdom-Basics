@@ -75,7 +75,7 @@ public class ListCommand extends CommandHandler {
                     final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(serverName)).findFirst().get();
                     switch (networkServer.getStatus()) {
                         case ONLINE -> status = "&aOnline";
-                        case STARTING -> status = "&6Starting";
+                        case STARTING -> status = "&bStarting";
                         case OFFLINE -> status = "&cOffline";
                     }
                 }

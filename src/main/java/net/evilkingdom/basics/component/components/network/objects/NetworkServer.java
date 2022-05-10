@@ -117,7 +117,7 @@ public class NetworkServer {
                 String preFormattedStatus = null;
                 switch (status) {
                     case ONLINE -> preFormattedStatus = "&aonline";
-                    case STARTING -> preFormattedStatus = "&6starting";
+                    case STARTING -> preFormattedStatus = "&bstarting";
                     case OFFLINE -> preFormattedStatus = "&coffline";
                 }
                 final String formattedStatus = preFormattedStatus;
