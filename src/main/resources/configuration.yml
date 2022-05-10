@@ -439,7 +439,7 @@ components:
         #This is a direct boot off the network (no recovering the player).
         lobby:
           - ""
-          - "&6&lEvil Kingdom"
+          - "&6&lEVIL KINGDOM &7| &61.0"
           - ""
           - "&eThe network has gone &coffline&e."
           - "&7&o(We advise you be patient while our wizards get it back up n' running!)"
