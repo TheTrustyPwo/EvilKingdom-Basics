@@ -233,8 +233,10 @@ components:
               - "&6&lBasics &7» &eInvalid server, &6%server% &efailed to be located."
 
             #The message sent when the targeted server is not online.
+            #Variables:
+            # - %status% ~ The targeted server's status.
             offline:
-              - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently &coffline&e."
+              - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently %status%&e."
 
           #The message sent when the targeted player is invalid (not online).
           #Variables:
@@ -247,7 +249,8 @@ components:
           #Variables:
           # - %player% ~ The targeted player.
           # - %server% ~ The targeted server.
-          invalid-send: "&6&lBasics &7» &eInvalid send, &6%player% &eis already on &6%server%&e."
+          invalid-send:
+           - "&6&lBasics &7» &eInvalid send, &6%player% &eis already on &6%server%&e."
 
           #The message sent when the send is a success.
           #Variables:
@@ -262,6 +265,79 @@ components:
             #The message sent to the target (when they have completed connecting to the target server).
             target:
               - "&6&lBasics &7» &eYou have been sent to &6%server% &eby &6%player%&e."
+
+      #The "/server" command.
+      #The permission for this command is "basics.network.commands.server".
+      server:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the server is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/server <server>&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the targeted server is invalid.
+          #Variables:
+          # - %server% ~ The targeted server.
+          invalid-server:
+
+            #The message sent when the targeted server could not be located (not a network server).
+            not-located:
+              - "&6&lBasics &7» &eInvalid server, &6%server% &efailed to be located."
+
+            #The message sent when the targeted server is not online.
+            #Variables:
+            # - %status% ~ The targeted server's status.
+            offline:
+              - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently %status%&e."
+
+            #The message sent when the player is already on the targeted server.
+            already-on:
+              - "&6&lBasics &7» &eInvalid server, you are already on &6%server%&e."
+
+          #The message sent when the server is a success.
+          #Variables:
+          # - %server% ~ The targeted server.
+          success:
+            - "&6&lBasics &7» &eYou have been sent to &6%server%&e."
 
       #The "/find" command.
       #The permission for this command is "basics.network.commands.find".
@@ -323,7 +399,7 @@ components:
           # - %player% ~ The targeted player.
           # - %server% ~ The targeted player's server.
           success:
-            - "&6&lBasics &7» &6%player% &eis currently on &6%server&e."
+            - "&6&lBasics &7» &6%player% &eis currently on &6%server%&e."
 
     #Configuration for shutdowns.
     shutdowns:
