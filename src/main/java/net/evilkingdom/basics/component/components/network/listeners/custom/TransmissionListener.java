@@ -45,9 +45,9 @@ public class TransmissionListener extends TransmissionHandler {
      */
     public void onReceive(final TransmissionServer server, final String siteName, final TransmissionType type, final UUID uuid, final String data) {
         final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
+        final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
         switch (type) {
             case REQUEST -> {
-                final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
                 switch (data.replaceFirst("request=", "")) {
                     case "online_players" -> {
                         final JsonArray jsonArray = new JsonArray();
@@ -80,7 +80,8 @@ public class TransmissionListener extends TransmissionHandler {
                     case "player_send" -> {
                         final Player player = Bukkit.getPlayerExact(data.split("=")[1].split("~")[0]);
                         final String sendServer = data.split("=")[1].split("~")[1].split(":")[0];
-                        transmissionImplementor.send(player, sendServer);
+                        final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(internalTransmissionServer -> internalTransmissionServer.getName().equals(sendServer)).findFirst().get();
+                        transmissionSite.send(player, transmissionServer);
                     }
                 }
             }

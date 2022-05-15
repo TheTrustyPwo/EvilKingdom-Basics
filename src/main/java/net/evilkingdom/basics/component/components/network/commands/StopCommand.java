@@ -113,8 +113,9 @@ public class StopCommand extends CommandHandler {
                 }
                 Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
             } else {
+                final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(lobbyName)).findFirst().get();
                 Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
-                    transmissionImplementor.send(onlinePlayer, lobbyName);
+                    transmissionSite.send(onlinePlayer, transmissionServer);
                     CompletableFuture.runAsync(() -> {
                         final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(lobbyName)).findFirst().get();
                         while (!networkServer.getOnlinePlayerUUIDs().contains(onlinePlayer.getUniqueId())) {
@@ -122,7 +123,6 @@ public class StopCommand extends CommandHandler {
                         }
                         final JsonArray jsonArray = new JsonArray();
                         this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> jsonArray.add(string));
-                        final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(lobbyName)).findFirst().get();
                         final Transmission messageTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_message=" + onlinePlayer.getUniqueId() + "~" + new Gson().toJson(jsonArray));
                         final Transmission soundTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sound=" + onlinePlayer.getUniqueId() + "~" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
                         messageTransmission.send();
