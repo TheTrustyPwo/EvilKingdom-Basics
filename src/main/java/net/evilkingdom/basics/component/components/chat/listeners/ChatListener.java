@@ -80,8 +80,8 @@ public class ChatListener implements Listener {
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.message-filtered.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.pitch"));
             return;
         }
-        final String playerPrefix = Optional.ofNullable(LuckPermsUtilities.getPrefixViaCache(player.getUniqueId())).orElse("&f");
-        final String playerSuffix = Optional.ofNullable(LuckPermsUtilities.getSuffixViaCache(player.getUniqueId())).orElse("&f");
+        final String playerPrefix = LuckPermsUtilities.getPrefixViaCache(player.getUniqueId());
+        final String playerSuffix = LuckPermsUtilities.getSuffixViaCache(player.getUniqueId());
         String formattedSubMessage;
         if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").contains("%player_prison_rank%")) {
             final net.evilkingdom.prison.component.components.data.objects.PlayerData prisonPlayerData = net.evilkingdom.prison.component.components.data.objects.PlayerData.getViaCache(player.getUniqueId()).get();

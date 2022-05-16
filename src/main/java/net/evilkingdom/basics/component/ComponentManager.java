@@ -5,6 +5,7 @@ package net.evilkingdom.basics.component;
  */
 
 import net.evilkingdom.basics.Basics;
+import net.evilkingdom.basics.component.components.chat.ChatComponent;
 import net.evilkingdom.basics.component.components.data.DataComponent;
 import net.evilkingdom.basics.component.components.file.FileComponent;
 import net.evilkingdom.basics.component.components.network.NetworkComponent;
@@ -20,6 +21,7 @@ public class ComponentManager {
     private DataComponent dataComponent;
     private TeleportComponent teleportComponent;
     private NetworkComponent networkComponent;
+    private ChatComponent chatComponent;
 
     /**
      * Allows you to create the Component Manager.
@@ -41,6 +43,8 @@ public class ComponentManager {
         this.teleportComponent.initialize();
         this.networkComponent = new NetworkComponent();
         this.networkComponent.initialize();
+        this.chatComponent = new ChatComponent();
+        this.chatComponent.initialize();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » ComponentManager] &aInitialized."));
     }
 
@@ -49,6 +53,9 @@ public class ComponentManager {
      */
     public void terminate() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » ComponentManager] &cTerminating..."));
+        if (this.chatComponent != null) {
+            this.chatComponent.terminate();
+        }
         if (this.networkComponent != null) {
             this.networkComponent.terminate();
         }
@@ -99,4 +106,14 @@ public class ComponentManager {
     public NetworkComponent getNetworkComponent() {
         return this.networkComponent;
     }
+
+    /**
+     * Allows you to retrieve the Chat component.
+     *
+     * @return The Chat component.
+     */
+    public ChatComponent getChatComponent() {
+        return this.chatComponent;
+    }
+
 }
