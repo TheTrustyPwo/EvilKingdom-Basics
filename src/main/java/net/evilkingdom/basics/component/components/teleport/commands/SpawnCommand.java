@@ -100,7 +100,7 @@ public class SpawnCommand extends CommandHandler {
             return new ArrayList<String>();
         }
         final Player player = (Player) sender;
-        if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.commands.server")) {
+        if (!LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.teleport.commands.spawn.targeted")) {
             return new ArrayList<String>();
         }
         ArrayList<String> tabCompletion = new ArrayList<String>();

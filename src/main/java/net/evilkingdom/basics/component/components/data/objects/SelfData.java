@@ -26,6 +26,7 @@ public class SelfData {
     private final Basics plugin;
 
     private Location spawn;
+    private boolean canChat;
 
     private static HashSet<SelfData> cache = new HashSet<SelfData>();
 
@@ -36,6 +37,7 @@ public class SelfData {
         this.plugin = Basics.getPlugin();
 
         this.spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
+        this.canChat = true;
     }
 
     /**
@@ -78,7 +80,11 @@ public class SelfData {
                 final float pitch = ((Double) datapointObject.getInnerObjects().get("pitch").getObject()).floatValue();
                 this.spawn = new Location(world, x, y, z, yaw, pitch);
             }
-           return true;
+            if (datapointModel.getObjects().containsKey("canChat")) {
+                final DatapointObject datapointObject = datapointModel.getObjects().get("canChat");
+                this.canChat = (Boolean) datapointObject.getObject();
+            }
+            return true;
         });
     }
 
@@ -97,10 +103,29 @@ public class SelfData {
         spawnDatapointObject.getInnerObjects().put("yaw", new DatapointObject(this.spawn.getYaw()));
         spawnDatapointObject.getInnerObjects().put("pitch", new DatapointObject(this.spawn.getPitch()));
         datapointModel.getObjects().put("spawn", spawnDatapointObject);
+        datapointModel.getObjects().put("canChat", new DatapointObject(this.canChat));
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
         datapoint.save(datapointModel, asynchronous);
+    }
+
+    /**
+     * Allows you to set the data's chat state.
+     *
+     * @param canChat ~ The data's chat state to set.
+     */
+    public void setCanChat(final boolean canChat) {
+        this.canChat = canChat;
+    }
+
+    /**
+     * Allows you to retrieve if the data can chat.
+     *
+     * @return If the data can chat.
+     */
+    public Boolean canChat() {
+        return this.canChat;
     }
 
     /**

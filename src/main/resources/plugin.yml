@@ -8,5 +8,6 @@ main: net.evilkingdom.basics.Basics
 version: 1.0
 api-version: 1.18
 depend: [Commons]
+softdepend: [Prison]
 
 commands:
