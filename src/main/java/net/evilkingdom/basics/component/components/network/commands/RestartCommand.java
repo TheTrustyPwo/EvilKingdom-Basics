@@ -78,6 +78,15 @@ public class RestartCommand extends CommandHandler {
             }
             return;
         }
+        if (this.plugin.getComponentManager().getNetworkComponent().isStopping()) {
+            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.restart.messages.invalid-restart").forEach(string -> sender.sendMessage(StringUtilities.colorize(string)));
+            if (sender instanceof Player) {
+                final Player player = (Player) sender;
+                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.restart.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.restart.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.restart.sounds.error.pitch"));
+                return;
+            }
+            return;
+        }
         this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.restart.messages.success").forEach(string -> sender.sendMessage(StringUtilities.colorize(string)));
         if (sender instanceof Player) {
             final Player player = (Player) sender;
@@ -105,34 +114,22 @@ public class RestartCommand extends CommandHandler {
                 }
             }
             Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
-            CompletableFuture.runAsync(() -> {
-                while (!Bukkit.getOnlinePlayers().isEmpty()) {
-                    //It won't stop the server until all of the players are offline.
-                }
-                Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "spigot:restart"), 20L);
-            });
         } else {
-            final ArrayList<UUID> playerUUIDsLeft = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).toList());
             final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(lobbyName)).findFirst().get();
+            final JsonArray jsonArray = new JsonArray();
             Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
                 transmissionSite.send(onlinePlayer, transmissionServer);
-                final JsonArray jsonArray = new JsonArray();
-                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> jsonArray.add(string));
-                final Transmission messageTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_message=" + onlinePlayer.getUniqueId() + "~" + new Gson().toJson(jsonArray));
-                final Transmission soundTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sound=" + onlinePlayer.getUniqueId() + "~" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
-                Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
-                    messageTransmission.send();
-                    soundTransmission.send();
-                    playerUUIDsLeft.remove(onlinePlayer.getUniqueId());
-                }, 40L);
+                jsonArray.add(onlinePlayer.getUniqueId().toString());
             });
-            CompletableFuture.runAsync(() -> {
-                while (!playerUUIDsLeft.isEmpty()) {
-                    //It won't stop the server until all of the players are offline.
-                }
-                Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "spigot:restart"), 20L);
-            });
+            final Transmission shutdownTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "server_shutdown=" + new Gson().toJson(jsonArray));
+            shutdownTransmission.send();
         }
+        CompletableFuture.runAsync(() -> {
+            while (!Bukkit.getOnlinePlayers().isEmpty()) {
+                //It won't stop the server until all of the players are offline.
+            }
+            Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "spigot:restart"), 20L);
+        });
     }
 
     /**

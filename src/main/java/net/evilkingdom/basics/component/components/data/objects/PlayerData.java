@@ -25,7 +25,7 @@ public class PlayerData {
     private final Basics plugin;
 
     private final UUID uuid;
-    private boolean canMessage, canChat;
+    private boolean canMessage, canChat, canStaffChat;
     private ArrayList<UUID> ignored;
     private final ArrayList<Cooldown> cooldowns;
 
@@ -85,6 +85,10 @@ public class PlayerData {
                 final DatapointObject datapointObject = datapointModel.getObjects().get("canMessage");
                 this.canMessage = (Boolean) datapointObject.getObject();
             }
+            if (datapointModel.getObjects().containsKey("canStaffChat")) {
+                final DatapointObject datapointObject = datapointModel.getObjects().get("canStaffChat");
+                this.canStaffChat = (Boolean) datapointObject.getObject();
+            }
             if (datapointModel.getObjects().containsKey("ignored")) {
                 final DatapointObject datapointObject = datapointModel.getObjects().get("ignored");
                 this.ignored = new ArrayList<UUID>(datapointObject.getInnerObjects().values().stream().map(innerDatapointObject -> UUID.fromString(((String) innerDatapointObject.getObject()))).collect(Collectors.toList()));
@@ -111,6 +115,7 @@ public class PlayerData {
         final DatapointModel datapointModel = new DatapointModel(this.uuid.toString());
         datapointModel.getObjects().put("canMessage", new DatapointObject(this.canMessage));
         datapointModel.getObjects().put("canChat", new DatapointObject(this.canChat));
+        datapointModel.getObjects().put("canStaffChat", new DatapointObject(this.canStaffChat));
         final DatapointObject ignoredDatapointObject = new DatapointObject();
         for (int i = 0; i < this.ignored.size(); i++) {
             ignoredDatapointObject.getInnerObjects().put(String.valueOf(i), new DatapointObject(this.ignored.get(i).toString()));
@@ -139,6 +144,24 @@ public class PlayerData {
     public ArrayList<Cooldown> getCooldowns() {
         final CooldownImplementor cooldownImplementor = CooldownImplementor.get(this.plugin);
         return new ArrayList<Cooldown>(cooldownImplementor.getCooldowns().stream().filter(cooldown -> cooldown.getIdentifier().startsWith("player-" + this.uuid)).collect(Collectors.toList()));
+    }
+
+    /**
+     * Allows you to set the data's staff chat state.
+     *
+     * @param canStaffChat ~ The data's staff chat state to set.
+     */
+    public void setCanStaffChat(final boolean canStaffChat) {
+        this.canStaffChat = canStaffChat;
+    }
+
+    /**
+     * Allows you to retrieve if the data can staff chat.
+     *
+     * @return If the data can staff chat.
+     */
+    public Boolean canStaffChat() {
+        return this.canStaffChat;
     }
 
     /**

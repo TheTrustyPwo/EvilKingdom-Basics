@@ -87,7 +87,7 @@ components:
 
           #The message sent when the mutechat is a success.
           #Variables:
-            # » %status% ~ The chat's status.
+          # » %status% ~ The chat's status.
           success:
 
             #The message sent to the player when the mutechat is a success.
@@ -411,6 +411,61 @@ components:
           success:
             - "&6&lBasics &7» &eRestarting the server..."
 
+
+      #The "/staffchat" command.
+      #The permission for this command is "basics.network.commands.staffchat".
+      staffchat:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the mutechat is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/staffchat&e."
+
+          #The message sent when the staffchat is a success.
+          #Variables:
+          # » %status% ~ The chat's status.
+          success:
+            - "&6&lBasics &7» &eYou have &6%status% &eyour staff chat."
+
       #The "/send" command.
       #The permission for this command is "basics.network.commands.send".
       send:
@@ -731,6 +786,17 @@ components:
     #Configuration for staff related stuff.
     #This only directly affects players with the permission "basics.network.staff".
     staff:
+
+      #Configuration for the staff chat.
+      chat:
+
+        #The format of the staff chat.
+        #Variables:
+        # » %player% ~ The player.
+        # » %player_rank% ~ The player's rank.
+        # » %player_server% ~ The player's server.
+        # » %message% ~ The message that was sent.
+        format: "&6&lStaff Chat &7| &7(&6%player_rank%&7)&e %player% &7(&6%player_server%&7) »&f %message%"
 
       #Configuration for staff connections.
       connection:

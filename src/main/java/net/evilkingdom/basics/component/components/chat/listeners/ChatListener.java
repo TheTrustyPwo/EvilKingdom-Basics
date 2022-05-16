@@ -23,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -52,7 +53,7 @@ public class ChatListener implements Listener {
     /**
      * The listener for player chats.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerChat(final AsyncChatEvent asyncChatEvent) {
         final Player player = asyncChatEvent.getPlayer();
         asyncChatEvent.setCancelled(true);

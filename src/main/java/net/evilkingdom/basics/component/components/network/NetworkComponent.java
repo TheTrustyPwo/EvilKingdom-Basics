@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.network;
 
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.network.commands.*;
+import net.evilkingdom.basics.component.components.network.listeners.ChatListener;
 import net.evilkingdom.basics.component.components.network.listeners.ConnectionListener;
 import net.evilkingdom.basics.component.components.network.listeners.custom.TransmissionListener;
 import net.evilkingdom.basics.component.components.network.objects.NetworkServer;
@@ -70,6 +71,7 @@ public class NetworkComponent {
         new SendCommand().register();
         new FindCommand().register();
         new ServerCommand().register();
+        new StaffChatCommand().register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aRegistered commands."));
     }
 
@@ -78,6 +80,7 @@ public class NetworkComponent {
      */
     private void registerListeners() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aRegistering listeners..."));
+        new ChatListener().register();
         new ConnectionListener().register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aRegistered listeners."));
     }
