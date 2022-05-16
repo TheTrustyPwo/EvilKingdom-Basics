@@ -5,6 +5,7 @@ package net.evilkingdom.basics.component.components.chat.listeners;
  */
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.text.PaperComponents;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.data.objects.PlayerData;
 import net.evilkingdom.basics.component.components.data.objects.SelfData;
@@ -75,7 +76,7 @@ public class ChatListener implements Listener {
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.player-on-cooldown.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.player-on-cooldown.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.player-on-cooldown.sound.pitch"));
             return;
         }
-        final String message = asyncChatEvent.originalMessage().toString();
+        final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
         if (StringUtilities.contains(message, new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.chat.filtered-words")))) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.chat.global.invalid-chat.message-filtered.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.message-filtered.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.pitch"));
