@@ -9,6 +9,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import io.papermc.paper.text.PaperComponents;
 import net.evilkingdom.basics.Basics;
+import net.evilkingdom.basics.component.components.network.objects.NetworkServer;
 import net.evilkingdom.commons.transmission.TransmissionImplementor;
 import net.evilkingdom.commons.transmission.abstracts.TransmissionHandler;
 import net.evilkingdom.commons.transmission.enums.TransmissionType;
@@ -97,10 +98,11 @@ public class TransmissionListener extends TransmissionHandler {
                         }), 60L);
                     }
                     case "staff_chat" -> {
+                        final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(server.getName())).findFirst().get();
                         final Player player = Bukkit.getPlayer(UUID.fromString(data.split("=")[1].split("~")[0]));
                         final String message = data.split("=")[1].split("~")[1];
                         final String playerRank = WordUtils.capitalizeFully(LuckPermsUtilities.getRankViaCache(player.getUniqueId()).orElse(""));
-                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> onlinePlayer.sendMessage(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.chat.format").replace("%player_rank%", playerRank).replace("%player%", player.getName())).replace("%message%", message)));
+                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> onlinePlayer.sendMessage(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.chat.format").replace("%server%", networkServer.getPrettifiedName()).replace("%player_rank%", playerRank).replace("%player%", player.getName())).replace("%message%", message)));
                     }
                 }
             }
