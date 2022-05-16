@@ -648,11 +648,8 @@ components:
     #Configuration for shutdowns.
     shutdowns:
 
-      #The lobby server.
-      lobby:
-
-        #The lobby server's name.
-        name: "lobby"
+      #The lobby server's name.
+      lobby: "lobby"
 
       #The kick when the server shuts down.
       kick:
