@@ -54,6 +54,7 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onPlayerChat(final AsyncChatEvent asyncChatEvent) {
         final Player player = asyncChatEvent.getPlayer();
+        asyncChatEvent.setCancelled(true);
         final SelfData selfData = SelfData.getViaCache().get();
         if (!selfData.canChat() && !LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.mutechat.bypass")) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.chat.global.invalid-chat.server-chat-disabled.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
@@ -80,15 +81,15 @@ public class ChatListener implements Listener {
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.message-filtered.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.pitch"));
             return;
         }
-        final String playerPrefix = LuckPermsUtilities.getPrefixViaCache(player.getUniqueId());
-        final String playerSuffix = LuckPermsUtilities.getSuffixViaCache(player.getUniqueId());
+        final String playerPrefix = LuckPermsUtilities.getPrefixViaCache(player.getUniqueId()).orElse("");
+        final String playerSuffix = LuckPermsUtilities.getSuffixViaCache(player.getUniqueId()).orElse("");
         String formattedSubMessage;
         if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").contains("%player_prison_rank%")) {
             final net.evilkingdom.prison.component.components.data.objects.PlayerData prisonPlayerData = net.evilkingdom.prison.component.components.data.objects.PlayerData.getViaCache(player.getUniqueId()).get();
             final String formattedPrisonRank = NumberUtilities.format(prisonPlayerData.getRank(), NumberFormatType.LETTERS);
-            formattedSubMessage = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix).replace("%prison_player_rank%", formattedPrisonRank);
+            formattedSubMessage = StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix).replace("%prison_player_rank%", formattedPrisonRank));
         } else {
-            formattedSubMessage = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix);
+            formattedSubMessage = StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix));
         }
         String formattedMessage = message;
         if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.colorized")) {
