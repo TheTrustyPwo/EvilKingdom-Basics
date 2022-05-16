@@ -69,7 +69,7 @@ public class ChatListener implements Listener {
             return;
         }
         final Optional<Cooldown> optionalCooldown = playerData.getCooldowns().stream().filter(cooldown -> cooldown.getIdentifier().equals("player-" + playerData.getUUID() + "-chat")).findFirst();
-        if (optionalCooldown.isPresent()) {
+        if (optionalCooldown.isPresent() && !LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.slowchat.bypass")) {
             final Cooldown cooldown = optionalCooldown.get();
             final String formattedTimeLeft = TimeUtilities.format((cooldown.getTimeLeft() * 50));
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.chat.global.invalid-chat.player-on-cooldown.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%time_left%", formattedTimeLeft))));
@@ -103,8 +103,11 @@ public class ChatListener implements Listener {
             } else {
                 final ItemStack item = player.getInventory().getItemInMainHand();
                 final String formattedItemAmount = NumberUtilities.format(item.getAmount(), NumberFormatType.LETTERS);
-                final String itemName = PaperComponents.plainTextSerializer().serialize(item.displayName());
-                final Component itemInformationComponent = Component.text(itemName.substring(1, (itemName.length() - 1))).hoverEvent(item.asHoverEvent());
+                String itemName = PaperComponents.plainTextSerializer().serialize(item.displayName());
+                if (itemName.startsWith("[") && itemName.endsWith("]")) {
+                    itemName = itemName.substring(1, (itemName.length() - 1));
+                }
+                final Component itemInformationComponent = Component.text(itemName).hoverEvent(item.asHoverEvent());
                 itemComponent = Component.text(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.taggables.item.format.not-empty-hand").replace("%amount%", formattedItemAmount))).replaceText(TextReplacementConfig.builder().match("%item%").replacement(itemInformationComponent).build());
             }
             final Component formatComponent = Component.text(formattedSubMessage.replace("%message%", formattedMessage)).replaceText(TextReplacementConfig.builder().matchLiteral("[i]").replacement(itemComponent).build()).replaceText(TextReplacementConfig.builder().matchLiteral("[item]").replacement(itemComponent).build());
@@ -118,6 +121,10 @@ public class ChatListener implements Listener {
                 final PlayerData onlinePlayerData = PlayerData.getViaCache(onlinePlayer.getUniqueId()).get();
                 return onlinePlayerData.canChat() && !onlinePlayerData.getIgnored().contains(player.getUniqueId());
             }).forEach(onlinePlayer -> onlinePlayer.sendMessage(format));
+        }
+        if (selfData.getChatSlow() > -1L) {
+            final Cooldown cooldown = new Cooldown(this.plugin, "player-" + playerData.getUUID() + "-chat", selfData.getChatSlow());
+            cooldown.start();
         }
     }
 

@@ -27,6 +27,7 @@ public class SelfData {
 
     private Location spawn;
     private boolean canChat;
+    private long chatSlow;
 
     private static HashSet<SelfData> cache = new HashSet<SelfData>();
 
@@ -38,6 +39,7 @@ public class SelfData {
 
         this.spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
         this.canChat = true;
+        this.chatSlow = -1L;
     }
 
     /**
@@ -84,6 +86,10 @@ public class SelfData {
                 final DatapointObject datapointObject = datapointModel.getObjects().get("canChat");
                 this.canChat = (Boolean) datapointObject.getObject();
             }
+            if (datapointModel.getObjects().containsKey("chatSlow")) {
+                final DatapointObject datapointObject = datapointModel.getObjects().get("chatSlow");
+                this.chatSlow = (Long) datapointObject.getObject();
+            }
             return true;
         });
     }
@@ -104,6 +110,7 @@ public class SelfData {
         spawnDatapointObject.getInnerObjects().put("pitch", new DatapointObject(this.spawn.getPitch()));
         datapointModel.getObjects().put("spawn", spawnDatapointObject);
         datapointModel.getObjects().put("canChat", new DatapointObject(this.canChat));
+        datapointModel.getObjects().put("chatSlow", new DatapointObject(this.chatSlow));
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
@@ -126,6 +133,24 @@ public class SelfData {
      */
     public Boolean canChat() {
         return this.canChat;
+    }
+
+    /**
+     * Allows you to set the data's chat slow.
+     *
+     * @param canChat ~ The data's chat slow to set.
+     */
+    public void setChatSlow(final long chatSlow) {
+        this.chatSlow = chatSlow;
+    }
+
+    /**
+     * Allows you to retrieve the data's chat slow.
+     *
+     * @return The data's chat slow.
+     */
+    public Long getChatSlow() {
+        return this.chatSlow;
     }
 
     /**
