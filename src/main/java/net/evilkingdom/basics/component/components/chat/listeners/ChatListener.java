@@ -88,7 +88,7 @@ public class ChatListener implements Listener {
         if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").contains("%player_prison_rank%")) {
             final net.evilkingdom.prison.component.components.data.objects.PlayerData prisonPlayerData = net.evilkingdom.prison.component.components.data.objects.PlayerData.getViaCache(player.getUniqueId()).get();
             final String formattedPrisonRank = NumberUtilities.format(prisonPlayerData.getRank(), NumberFormatType.LETTERS);
-            formattedSubMessage = StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix).replace("%prison_player_rank%", formattedPrisonRank));
+            formattedSubMessage = StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix).replace("%player_prison_rank%", formattedPrisonRank));
         } else {
             formattedSubMessage = StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix));
         }
@@ -96,17 +96,18 @@ public class ChatListener implements Listener {
         if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.colorized")) {
             formattedMessage = StringUtilities.colorize(message);
         }
-        if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getBoolean("components.chat.global.taggables.item.enabled") && (message.contains("[i]") || message.contains("[item]")) && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.taggables.item")) {
+        if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getBoolean("components.chat.global.taggables.item.enabled") && ((message.contains("[i]") || message.contains("[item]")) && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.taggables.item"))) {
             final Component itemComponent;
             if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
                 itemComponent = Component.text(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.taggables.item.format.empty-hand").replace("%player%", player.getName())));
             } else {
                 final ItemStack item = player.getInventory().getItemInMainHand();
                 final String formattedItemAmount = NumberUtilities.format(item.getAmount(), NumberFormatType.LETTERS);
-                final Component itemInformationComponent = item.displayName().hoverEvent(item.asHoverEvent());
+                final String itemName = PaperComponents.plainTextSerializer().serialize(item.displayName());
+                final Component itemInformationComponent = Component.text(itemName.substring(1, (itemName.length() - 1))).hoverEvent(item.asHoverEvent());
                 itemComponent = Component.text(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.taggables.item.format.not-empty-hand").replace("%amount%", formattedItemAmount))).replaceText(TextReplacementConfig.builder().match("%item%").replacement(itemInformationComponent).build());
             }
-            final Component formatComponent = Component.text(formattedSubMessage.replace("%message%", formattedMessage)).replaceText(TextReplacementConfig.builder().matchLiteral("[i]").matchLiteral("[item]").replacement(itemComponent).build());
+            final Component formatComponent = Component.text(formattedSubMessage.replace("%message%", formattedMessage)).replaceText(TextReplacementConfig.builder().matchLiteral("[i]").replacement(itemComponent).build()).replaceText(TextReplacementConfig.builder().matchLiteral("[item]").replacement(itemComponent).build());
             Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> {
                 final PlayerData onlinePlayerData = PlayerData.getViaCache(onlinePlayer.getUniqueId()).get();
                 return onlinePlayerData.canChat() && !onlinePlayerData.getIgnored().contains(player.getUniqueId());
