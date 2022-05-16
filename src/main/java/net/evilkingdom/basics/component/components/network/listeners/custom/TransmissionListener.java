@@ -66,11 +66,13 @@ public class TransmissionListener extends TransmissionHandler {
             case MESSAGE -> {
                 switch (data.split("=")[0]) {
                     case "player_message" -> {
+                        System.out.println("player name - " + data.split("=")[1].split("~")[0]); //Debug for now
                         final Player player = Bukkit.getPlayerExact(data.split("=")[1].split("~")[0]);
                         final JsonArray jsonArray = JsonParser.parseString(data.split("=")[1].split("~")[1]).getAsJsonArray();
                         jsonArray.forEach(jsonElement -> player.sendMessage(StringUtilities.colorize(jsonElement.getAsString())));
                     }
                     case "player_sound" -> {
+                        System.out.println("player name - " + data.split("=")[1].split("~")[0]); //Debug for now
                         final Player player = Bukkit.getPlayerExact(data.split("=")[1].split("~")[0]);
                         final Sound sound = Sound.valueOf(data.split("=")[1].split("~")[1].split(":")[0]);
                         final float volume = Float.parseFloat(data.split("=")[1].split("~")[1].split(":")[1]);

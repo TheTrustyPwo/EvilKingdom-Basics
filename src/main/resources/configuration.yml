@@ -140,7 +140,7 @@ components:
             #Variables:
             # » %item% ~ The item.
             # » %item_amount% ~ The item's amount.
-            not-empty-hand: "&6[&6%amount%&7x &6%item%&7]"
+            not-empty-hand: "&7[&6%amount%&ex &6%item%&7]"
 
   #Configuration for the Network component.
   network:

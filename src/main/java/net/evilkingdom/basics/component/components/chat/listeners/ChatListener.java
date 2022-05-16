@@ -108,7 +108,7 @@ public class ChatListener implements Listener {
                     itemName = itemName.substring(1, (itemName.length() - 1));
                 }
                 final Component itemInformationComponent = Component.text(itemName).hoverEvent(item.asHoverEvent());
-                itemComponent = Component.text(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.taggables.item.format.not-empty-hand").replace("%amount%", formattedItemAmount))).replaceText(TextReplacementConfig.builder().match("%item%").replacement(itemInformationComponent).build());
+                itemComponent = Component.text(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.taggables.item.format.not-empty-hand").replace("%amount%", formattedItemAmount))).replaceText(TextReplacementConfig.builder().matchLiteral("%item%").replacement(itemInformationComponent).build());
             }
             final Component formatComponent = Component.text(formattedSubMessage.replace("%message%", formattedMessage)).replaceText(TextReplacementConfig.builder().matchLiteral("[i]").replacement(itemComponent).build()).replaceText(TextReplacementConfig.builder().matchLiteral("[item]").replacement(itemComponent).build());
             Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> {

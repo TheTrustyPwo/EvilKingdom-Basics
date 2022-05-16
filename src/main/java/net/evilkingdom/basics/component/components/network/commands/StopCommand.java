@@ -135,7 +135,7 @@ public class StopCommand extends CommandHandler {
             while (!Bukkit.getOnlinePlayers().isEmpty()) {
                 //It won't stop the server until all of the players are offline.
             }
-            Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop"));
+            Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop"), 20L);
         });
     }
 

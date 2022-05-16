@@ -136,7 +136,7 @@ public class RestartCommand extends CommandHandler {
             while (!Bukkit.getOnlinePlayers().isEmpty()) {
                 //It won't stop the server until all of the players are offline.
             }
-            Bukkit.getScheduler().runTask(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "spigot:restart"));
+            Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "spigot:restart"), 20L);
         });
     }
 
