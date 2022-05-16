@@ -5,6 +5,7 @@ package net.evilkingdom.basics.component.components.chat;
  */
 
 import net.evilkingdom.basics.Basics;
+import net.evilkingdom.basics.component.components.chat.commands.MuteChatCommand;
 import net.evilkingdom.basics.component.components.chat.listeners.ChatListener;
 import net.evilkingdom.basics.component.components.teleport.commands.SetSpawnCommand;
 import net.evilkingdom.basics.component.components.teleport.commands.SpawnCommand;
@@ -45,7 +46,7 @@ public class ChatComponent {
      */
     private void registerCommands() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Chat] &aRegistering commands..."));
-        //
+        new MuteChatCommand().register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Chat] &aRegistered commands."));
     }
 

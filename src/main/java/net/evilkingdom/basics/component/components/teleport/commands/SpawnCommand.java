@@ -36,7 +36,7 @@ public class SpawnCommand extends CommandHandler {
      * Allows you to register the command.
      */
     public void register() {
-        final Command command = new Command(this.plugin, "spawn", new ArrayList<String>(), this);
+        final Command command = new Command(this.plugin, "spawn",this);
         command.register();
     }
 

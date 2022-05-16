@@ -4,6 +4,110 @@ components:
   #Configuration for the Chat component.
   chat:
 
+    #The component's commands.
+    commands:
+
+      #The "/mutechat" command.
+      #The permission for this command is "basics.chat.commands.mutechat".
+      mutechat:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the mutechat is a success.
+          success:
+
+            #The sound sent to the player when the mutechat is a success.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online players when the mutechat is a success.
+            online-players:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online bypassers when the mutechat is a success.
+            #This applies to online players with the permission "basics.chat.global.mutechat.bypass".
+            online-bypassers:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/mutechat&e."
+
+          #The message sent when the mutechat is a success.
+          #Variables:
+            # » %status% ~ The chat's status.
+          success:
+
+            #The message sent to the player when the mutechat is a success.
+            player:
+              - "&6&lBasics &7» &eYou have &6%status% &ethe chat."
+
+            #The message sent to the online players when the mutechat is a success.
+            #Variables:
+            # » %player% ~ The player.
+            online-players:
+              - "&6&lBasics &7» &eThe chat has been &6%status% &eby &6%player%&e."
+
+            #The message sent to the online bypassers when the mutechat is a success.
+            #This applies to online players with the permission "basics.chat.global.mutechat.bypass".
+            #Variables:
+            # » %player% ~ The player.
+            online-bypassers:
+              - "&6&lBasics &7» &eThe chat has been &6%status% &eby &6%player%&e."
+              - "&7&o(But don't worry, you have the authority to bypass this change!)"
+
     #The list of filtered words.
     #The system automatically detects replacements of numbers and other characters.
     filtered-words:
@@ -144,7 +248,6 @@ components:
 
   #Configuration for the Network component.
   network:
-
 
     #The component's commands.
     commands:

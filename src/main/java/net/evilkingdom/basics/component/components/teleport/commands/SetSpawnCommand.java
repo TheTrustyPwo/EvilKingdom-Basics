@@ -37,7 +37,7 @@ public class SetSpawnCommand extends CommandHandler {
      * Allows you to register the command.
      */
     public void register() {
-        final Command command = new Command(this.plugin, "setspawn", new ArrayList<String>(), this);
+        final Command command = new Command(this.plugin, "setspawn", this);
         command.register();
     }
 

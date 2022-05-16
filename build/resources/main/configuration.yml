@@ -1,9 +1,253 @@
 #Configuration for the components.
 components:
 
+  #Configuration for the Chat component.
+  chat:
+
+    #The component's commands.
+    commands:
+
+      #The "/mutechat" command.
+      #The permission for this command is "basics.chat.commands.mutechat".
+      mutechat:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the mutechat is a success.
+          success:
+
+            #The sound sent to the player when the mutechat is a success.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online players when the mutechat is a success.
+            online-players:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online bypassers when the mutechat is a success.
+            #This applies to online players with the permission "basics.chat.global.mutechat.bypass".
+            online-bypassers:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/mutechat&e."
+
+          #The message sent when the mutechat is a success.
+          #Variables:
+            # » %status% ~ The chat's status.
+          success:
+
+            #The message sent to the player when the mutechat is a success.
+            player:
+              - "&6&lBasics &7» &eYou have &6%status% &ethe chat."
+
+            #The message sent to the online players when the mutechat is a success.
+            #Variables:
+            # » %player% ~ The player.
+            online-players:
+              - "&6&lBasics &7» &eThe chat has been &6%status% &eby &6%player%&e."
+
+            #The message sent to the online bypassers when the mutechat is a success.
+            #This applies to online players with the permission "basics.chat.global.mutechat.bypass".
+            #Variables:
+            # » %player% ~ The player.
+            online-bypassers:
+              - "&6&lBasics &7» &eThe chat has been &6%status% &eby &6%player%&e."
+              - "&7&o(But don't worry, you have the authority to bypass this change!)"
+
+    #The list of filtered words.
+    #The system automatically detects replacements of numbers and other characters.
+    filtered-words:
+      - "kys"
+      - "cunt"
+      - "fag"
+      - "faggot"
+      - "tranny"
+      - "trannies"
+      - "nigger"
+      - "nigga"
+      - "retard"
+      - "hitler"
+      - "nazi"
+
+    #Configuration for the global chat.
+    global:
+
+      #The format of the global chat.
+      #Variables:
+      # » %player% ~ The player.
+      # » %player_prefix% ~ The player's prefix.
+      # » %player_suffix% ~ The player's suffix.
+      # » %player_prison_rank% ~ The player's prison rank (only works if prison is installed).
+      # » %message% ~ The message that was sent (colorized if the player has permission "basics.chat.global.colorized").
+      format: "&6%player_prison_rank% &7| %player_prefix%%player%%player_suffix% &7»&f %message%"
+
+      #Configuration for when the chat is invalid.
+      invalid-chat:
+
+        #The error when the player chat's is disabled.
+        player-chat-disabled:
+
+          #The message sent when the player chat's is disabled.
+          message:
+            - "&6&lBasics &7» &eInvalid chat, you cannot chat whilst your chat is &6disabled&e."
+
+          #The sound sent when the player chat's is disabled.
+          sound:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The error when the player is on cooldown for chatting (could be bypassed with the permission "basics.chat.global.slowchat.bypass").
+        player-on-cooldown:
+
+          #The message sent when the player is on cooldown for chatting.
+          #Variables:
+          # » %time_left% ~ The cooldown's time left.
+          message:
+            - "&6&lPrison &7» &eInvalid chat, &eyou are on &6cooldown &efor another &6%time_left%&e."
+
+          #The sound sent when the player is on cooldown for chatting.
+          sound:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The error when the message contains a filtered word.
+        message-filtered:
+
+          #The message sent when the message contains a filtered word.
+          message:
+            - "&6&lBasics &7» &eInvalid chat, your message contains &6filtered&e word(s)."
+
+          #The sound sent when the message contains a filtered word.
+          sound:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The error when the servers chat's state is disabled (and the player doesn't have permission "basics.chat.global.mutechat.bypass").
+        server-chat-disabled:
+
+          #The message sent when servers chat's state is disabled.
+          #Variables:
+          # » %time_left% ~ The cooldown's time left.
+          message:
+            - "&6&lPrison &7» &eInvalid chat, you cannot chat whilst chat is &6disabled&e."
+
+          #The sound sent when servers chat's state is disabled.
+          sound:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+      #Configuration for taggables in global chat.
+      taggables:
+
+        #Configuration for the item taggable.
+        #This only applies if the message contains [i] or [item] and the player has permission "basics.chat.global.taggables.item".
+        item:
+
+          #Can items be tagged in chat?
+          enabled: true
+
+          #The format of the tagging.
+          #Variables:
+          # » %player% ~ The player.
+          format:
+
+            #The format when the player's hand is empty.
+            empty-hand: "&7[&6%player%&e's Hand&7]"
+
+            #The format when the player's hand is not empty.
+            #Variables:
+            # » %item% ~ The item.
+            # » %item_amount% ~ The item's amount.
+            not-empty-hand: "&7[&6%amount%&ex &6%item%&7]"
+
   #Configuration for the Network component.
   network:
-
 
     #The component's commands.
     commands:
@@ -53,9 +297,9 @@ components:
 
           #The message sent when the list is a success.
           #Variables:
-          # - %global_player_count% ~ The global player count.
-          # - %server_<name>_status% ~ The status of the server (it's automatically colored).
-          # - %server_<name>_player_count% ~ The player count of the server.
+          # » %global_player_count% ~ The global player count.
+          # » %server_<name>_status% ~ The status of the server (it's automatically colored).
+          # » %server_<name>_player_count% ~ The player count of the server.
           success:
             - ""
             - "&6&lOnline Players &7| &6%global_player_count%"
@@ -225,7 +469,7 @@ components:
 
           #The message sent when the targeted server is invalid.
           #Variables:
-          # - %server% ~ The targeted server.
+          # » %server% ~ The targeted server.
           invalid-server:
 
             #The message sent when the targeted server could not be located (not a network server).
@@ -234,28 +478,28 @@ components:
 
             #The message sent when the targeted server is not online.
             #Variables:
-            # - %status% ~ The targeted server's status.
+            # » %status% ~ The targeted server's status.
             offline:
               - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently %status%&e."
 
           #The message sent when the targeted player is invalid (not online).
           #Variables:
-          # - %player% ~ The targeted player.
+          # » %player% ~ The targeted player.
           invalid-player:
             - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
             - "&7&o(This was a network wide check as well!)"
 
           #The message sent when send is invalid (the targeted player is already on the targeted server).
           #Variables:
-          # - %player% ~ The targeted player.
-          # - %server% ~ The targeted server.
+          # » %player% ~ The targeted player.
+          # » %server% ~ The targeted server.
           invalid-send:
            - "&6&lBasics &7» &eInvalid send, &6%player% &eis already on &6%server%&e."
 
           #The message sent when the send is a success.
           #Variables:
-          # - %player% ~ The targeted player.
-          # - %server% ~ The targeted server.
+          # » %player% ~ The targeted player.
+          # » %server% ~ The targeted server.
           success:
 
             #The message sent to the player.
@@ -316,7 +560,7 @@ components:
 
           #The message sent when the targeted server is invalid.
           #Variables:
-          # - %server% ~ The targeted server.
+          # » %server% ~ The targeted server.
           invalid-server:
 
             #The message sent when the targeted server could not be located (not a network server).
@@ -325,7 +569,7 @@ components:
 
             #The message sent when the targeted server is not online.
             #Variables:
-            # - %status% ~ The targeted server's status.
+            # » %status% ~ The targeted server's status.
             offline:
               - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently %status%&e."
 
@@ -335,7 +579,7 @@ components:
 
           #The message sent when the server is a success.
           #Variables:
-          # - %server% ~ The targeted server.
+          # » %server% ~ The targeted server.
           success:
             - "&6&lBasics &7» &eYou have been sent to &6%server%&e."
 
@@ -389,15 +633,15 @@ components:
 
           #The message sent when the targeted player is invalid (not online).
           #Variables:
-          # - %player% ~ The targeted player.
+          # » %player% ~ The targeted player.
           invalid-player:
             - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
             - "&7&o(This was a network wide check as well!)"
 
           #The message sent when the send is a success.
           #Variables:
-          # - %player% ~ The targeted player.
-          # - %server% ~ The targeted player's server.
+          # » %player% ~ The targeted player.
+          # » %server% ~ The targeted player's server.
           success:
             - "&6&lBasics &7» &6%player% &eis currently on &6%server%&e."
 
@@ -488,8 +732,8 @@ components:
 
         #The messages for staff connections.
         #Variables:
-        # - %player% ~ The player.
-        # - %server% ~ The server.
+        # » %player% ~ The player.
+        # » %server% ~ The server.
         messages:
 
           #The message sent when a staff joins a server.
@@ -548,8 +792,8 @@ components:
 
         #The message sent when a server status changes.
         #Variables:
-        # - %server% ~ The server.
-        # - %status% ~ The server's status (it's automatically colored).
+        # » %server% ~ The server.
+        # » %status% ~ The server's status (it's automatically colored).
         message:
           - "&6&lBasics &7» &6%server% &eis now %status%&e."
 
@@ -705,7 +949,7 @@ components:
 
           #The message sent when the targeted player is invalid (not online).
           #Variables:
-          # - %player% ~ The targeted player.
+          # » %player% ~ The targeted player.
           invalid-player:
             - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
 
@@ -718,7 +962,7 @@ components:
 
             #The message sent if there is a target.
             #Variables:
-            # - %player% ~ The targeted player.
+            # » %player% ~ The targeted player.
             with-target:
 
               #The message sent to the player.
