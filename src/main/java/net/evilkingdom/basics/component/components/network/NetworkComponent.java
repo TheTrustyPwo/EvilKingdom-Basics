@@ -26,6 +26,7 @@ public class NetworkComponent {
 
     private final Basics plugin;
     private BukkitTask serverTask;
+    private boolean stopping;
     private HashSet<NetworkServer> servers;
 
     /**
@@ -40,6 +41,7 @@ public class NetworkComponent {
      */
     public void initialize() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing..."));
+        this.stopping = false;
         this.initializeTransmissions();
         this.initializeServers();
         this.registerCommands();
@@ -135,6 +137,24 @@ public class NetworkComponent {
      */
     public HashSet<NetworkServer> getServers() {
         return this.servers;
+    }
+
+    /**
+     * Allows you to retrieve if the server is stopping.
+     *
+     * @return ~ If the server is stopping.
+     */
+    public boolean isStopping() {
+        return this.stopping;
+    }
+
+    /**
+     * Allows you to set the server's stopping state.
+     *
+     * @param stopping ~ The server's stopping state to set.
+     */
+    public void setStopping(final boolean stopping) {
+        this.stopping = stopping;
     }
 
 }

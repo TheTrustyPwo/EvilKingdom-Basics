@@ -25,7 +25,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -82,11 +84,18 @@ public class StopCommand extends CommandHandler {
             final Player player = (Player) sender;
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.stop.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.stop.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.stop.sounds.success.pitch"));
         }
+        this.plugin.getComponentManager().getNetworkComponent().setStopping(true);
         final String lobbyName = this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.lobby");
         final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
         final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
-        final ArrayList<Player> playersToSend = new ArrayList<Player>(Bukkit.getOnlinePlayers().stream().toList());
+        final boolean kickPlayer;
         if (transmissionSite.getServerName().equals(lobbyName)) {
+            kickPlayer = true;
+        } else {
+            final NetworkServer lobbyNetworkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(lobbyName)).findFirst().get();
+            kickPlayer = lobbyNetworkServer.getStatus() != NetworkServerStatus.ONLINE;
+        }
+        if (kickPlayer) {
             final ArrayList<String> kickMessageList = new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.lobby").stream().map(string -> StringUtilities.colorize(string)).collect(Collectors.toList()));
             final StringBuilder kickMessage = new StringBuilder();
             for (int i = 0; i < kickMessageList.size(); i++) {
@@ -96,56 +105,35 @@ public class StopCommand extends CommandHandler {
                     kickMessage.append(kickMessageList.get(i)).append("\n");
                 }
             }
-            for (final Iterator<Player> playersToSendIterator = playersToSend.iterator(); playersToSendIterator.hasNext();) {
-                final Player playerToSend = playersToSendIterator.next();
-                playerToSend.kick(Component.text(kickMessage.toString()));
-                playersToSendIterator.remove();
-            }
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
+            CompletableFuture.runAsync(() -> {
+                while (!Bukkit.getOnlinePlayers().isEmpty()) {
+                    //It won't stop the server until all of the players are offline.
+                }
+                Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop"), 20L);
+            });
         } else {
-            final NetworkServer lobbyNetworkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(lobbyName)).findFirst().get();
-            if (lobbyNetworkServer.getStatus() != NetworkServerStatus.ONLINE) {
-                final ArrayList<String> kickMessageList = new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.lobby").stream().map(string -> StringUtilities.colorize(string)).collect(Collectors.toList()));
-                final StringBuilder kickMessage = new StringBuilder();
-                for (int i = 0; i < kickMessageList.size(); i++) {
-                    if (i == (kickMessageList.size() - 1)) {
-                        kickMessage.append(kickMessageList.get(i));
-                    } else {
-                        kickMessage.append(kickMessageList.get(i)).append("\n");
-                    }
+            final ArrayList<UUID> playerUUIDsLeft = new ArrayList<UUID>(Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).toList());
+            final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(lobbyName)).findFirst().get();
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                transmissionSite.send(onlinePlayer, transmissionServer);
+                final JsonArray jsonArray = new JsonArray();
+                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> jsonArray.add(string));
+                final Transmission messageTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_message=" + onlinePlayer.getUniqueId() + "~" + new Gson().toJson(jsonArray));
+                final Transmission soundTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sound=" + onlinePlayer.getUniqueId() + "~" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
+                Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                    messageTransmission.send();
+                    soundTransmission.send();
+                    playerUUIDsLeft.remove(onlinePlayer.getUniqueId());
+                }, 40L);
+            });
+            CompletableFuture.runAsync(() -> {
+                while (!playerUUIDsLeft.isEmpty()) {
+                    //It won't stop the server until all of the players are offline.
                 }
-                for (final Iterator<Player> playersToSendIterator = playersToSend.iterator(); playersToSendIterator.hasNext();) {
-                    final Player playerToSend = playersToSendIterator.next();
-                    playerToSend.kick(Component.text(kickMessage.toString()));
-                    playersToSendIterator.remove();
-                }
-            } else {
-                final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(lobbyName)).findFirst().get();
-                for (final Iterator<Player> playersToSendIterator = playersToSend.iterator(); playersToSendIterator.hasNext();) {
-                    final Player playerToSend = playersToSendIterator.next();
-                    transmissionSite.send(playerToSend, transmissionServer);
-                    CompletableFuture.runAsync(() -> {
-                        final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(lobbyName)).findFirst().get();
-                        while (!networkServer.getOnlinePlayerUUIDs().contains(playerToSend.getUniqueId())) {
-                            //It won't send the message until the player is registered as connected to the lobby.
-                        }
-                        System.out.println("ok we c an send lol");
-                        final JsonArray jsonArray = new JsonArray();
-                        this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> jsonArray.add(string));
-                        final Transmission messageTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_message=" + playerToSend.getUniqueId() + "~" + new Gson().toJson(jsonArray));
-                        final Transmission soundTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sound=" + playerToSend.getUniqueId() + "~" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
-                        messageTransmission.send();
-                        soundTransmission.send();
-                        playersToSendIterator.remove();
-                    });
-                }
-            }
+                Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop"), 20L);
+            });
         }
-        CompletableFuture.runAsync(() -> {
-            while (!playersToSend.isEmpty()) {
-                //It won't stop the server until all of the players are offline.
-            }
-            Bukkit.getScheduler().runTaskLater(this.plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "minecraft:stop"), 20L);
-        });
     }
 
     /**

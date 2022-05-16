@@ -351,6 +351,10 @@ components:
           invalid-permissions:
             - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
+          #The message sent when the stop is invalid (the server is already stopping).
+          invalid-stop:
+            - "&6&lBasics &7» &eInvalid stop, the server is already &6stopping&e..."
+
           #The message sent when the stop is a success.
           success:
             - "&6&lBasics &7» &eStopping the server..."
@@ -398,6 +402,10 @@ components:
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
             - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the restart is invalid (the server is already stopping).
+          invalid-restart:
+            - "&6&lBasics &7» &eInvalid restart, the server is already &6stopping&e..."
 
           #The message sent when the stop is a success.
           success:
