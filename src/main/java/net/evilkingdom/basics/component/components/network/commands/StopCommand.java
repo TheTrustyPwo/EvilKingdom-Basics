@@ -128,6 +128,7 @@ public class StopCommand extends CommandHandler {
                         while (!networkServer.getOnlinePlayerUUIDs().contains(playerToSend.getUniqueId())) {
                             //It won't send the message until the player is registered as connected to the lobby.
                         }
+                        System.out.println("ok we c an send lol");
                         final JsonArray jsonArray = new JsonArray();
                         this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> jsonArray.add(string));
                         final Transmission messageTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_message=" + playerToSend.getUniqueId() + "~" + new Gson().toJson(jsonArray));

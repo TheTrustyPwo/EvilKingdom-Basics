@@ -121,7 +121,7 @@ public class NetworkServer {
                     case OFFLINE -> preFormattedStatus = "&coffline";
                 }
                 final String formattedStatus = preFormattedStatus;
-                Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> {
+                Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).toList().forEach(onlinePlayer -> {
                     this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.staff.server-status.message").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%server%", this.prettifiedName).replace("%status%", formattedStatus))));
                     onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.status-change.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.staff.status-change.sound.pitch"));
                 });
