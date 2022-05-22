@@ -101,7 +101,7 @@ public class SendCommand extends CommandHandler {
             }
             if (targetServerName.equals("here")) {
                 if (Bukkit.getOnlinePlayers().stream().map(onlinePlayer -> onlinePlayer.getUniqueId()).collect(Collectors.toList()).contains(offlineTarget.getUniqueId())) {
-                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.invalid-send").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%target%", offlineTarget.getName()).replace("%server%", "here"))));
+                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.invalid-send").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", offlineTarget.getName()).replace("%server%", "here"))));
                     player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.send.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.pitch"));
                     return;
                 }
@@ -137,7 +137,7 @@ public class SendCommand extends CommandHandler {
                     return;
                 }
                 if (networkServer.getOnlinePlayerUUIDs().contains(offlineTarget.getUniqueId())) {
-                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.invalid-send").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%target%", offlineTarget.getName()).replace("%server%", networkServer.getPrettifiedName()))));
+                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.invalid-send").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", offlineTarget.getName()).replace("%server%", networkServer.getPrettifiedName()))));
                     player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.send.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.pitch"));
                     return;
                 }

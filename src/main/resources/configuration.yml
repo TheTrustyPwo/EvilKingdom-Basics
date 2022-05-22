@@ -665,7 +665,7 @@ components:
             # » %player% ~ The player that sent the announcement.
             online-players:
               - ""
-              - "&6&lAnnouncement &7| &6From &e%player%"
+              - "&6&lAnnouncement"
               - "&6 » &e%message%"
               - ""
 
