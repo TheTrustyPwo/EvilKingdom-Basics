@@ -46,7 +46,7 @@ public class AnnounceCommand extends CommandHandler {
      * Allows you to register the command.
      */
     public void register() {
-        final Command command = new Command(this.plugin, "send", new ArrayList<String>(List.of("connect")), this);
+        final Command command = new Command(this.plugin, "announce", new ArrayList<String>(List.of("alert", "announcement", "bc", "broadcast")), this);
         command.register();
     }
 
