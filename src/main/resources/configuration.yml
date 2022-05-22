@@ -631,7 +631,7 @@ components:
 
           #The message sent when the sender enters an invalid usage.
           invalid-usage:
-            - "&6&lBasics &7» &eInvalid usage, &etry &6/announce <player> <message>&e."
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/announce <server> <message>&e."
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:

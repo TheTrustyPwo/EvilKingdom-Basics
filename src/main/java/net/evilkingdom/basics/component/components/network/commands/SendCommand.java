@@ -94,7 +94,7 @@ public class SendCommand extends CommandHandler {
             final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
             final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
             final String targetServerName = arguments[1].toLowerCase();
-            if (!targetServerName.equals(transmissionSite.getServerName()) && !this.plugin.getComponentManager().getNetworkComponent().getServers().stream().map(innerNetworkServer -> innerNetworkServer.getName()).toList().contains(targetServerName)) {
+            if (!targetServerName.equals("here") && !this.plugin.getComponentManager().getNetworkComponent().getServers().stream().map(innerNetworkServer -> innerNetworkServer.getName()).toList().contains(targetServerName)) {
                 this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.invalid-server.not-located").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%server%", arguments[1]))));
                 player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.send.sounds.error.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.error.pitch"));
                 return;
