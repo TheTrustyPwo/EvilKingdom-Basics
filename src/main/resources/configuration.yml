@@ -355,7 +355,7 @@ components:
           invalid-stop:
             - "&6&lBasics &7» &eInvalid stop, the server is already &6stopping&e..."
 
-          #The message sent when the stop is a success. //ADD ANNOUNCEMENT GLOBALLY AND /STOP <SERVER> (ALSO DO FOR RESTART IDIOT)
+          #The message sent when the stop is a success.
           success:
             - "&6&lBasics &7» &eStopping the server..."
 
@@ -659,7 +659,7 @@ components:
             #The message sent to the player.
             # » %server% ~ The targeted server.
             player:
-              - "&6&lBasics &7» &eYou have an announcement to &6%server% &ewith the message ""&6%message%&e""."
+              - "&6&lBasics &7» &eYou have an announcement to &6%server% &ewith the message &6%message%&e."
 
             #The message sent to the online players.
             # » %player% ~ The player that sent the announcement.

@@ -1,0 +1,11 @@
+name: Basics
+version: master-4c66d99
+main: net.evilkingdom.basics.Basics
+description: Used as the core for the servers of Evil Kingdom.
+author: kodirati
+website: kodirati.com
+depend:
+ - Commons
+api-version: 1.18
+softdepend:
+ - Prison
