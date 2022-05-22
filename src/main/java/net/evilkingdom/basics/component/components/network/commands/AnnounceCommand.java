@@ -101,8 +101,7 @@ public class AnnounceCommand extends CommandHandler {
                 final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(networkServer.getName())).findFirst().get();
                 final JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("player", player.getUniqueId().toString());
-                jsonObject.addProperty("sender", player.getUniqueId().toString());
-                jsonObject.addProperty("reason", "server_stop");
+                jsonObject.addProperty("message", message);
                 final Transmission announceTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "announce=" + new Gson().toJson(jsonObject));
                 announceTransmission.send();
             });
@@ -132,8 +131,7 @@ public class AnnounceCommand extends CommandHandler {
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.announce.sounds.success.player.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.announce.sounds.success.player.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.announce.sounds.success.player.pitch"));
             final JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("player", player.getUniqueId().toString());
-            jsonObject.addProperty("sender", player.getUniqueId().toString());
-            jsonObject.addProperty("reason", "server_stop");
+            jsonObject.addProperty("message", message);
             final Transmission announceTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "announce=" + new Gson().toJson(jsonObject));
             announceTransmission.send();
         }

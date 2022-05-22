@@ -64,11 +64,15 @@ public class ChatListener implements Listener {
     public void onPlayerChat(final AsyncChatEvent asyncChatEvent) {
         final Player player = asyncChatEvent.getPlayer();
         final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
-        final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
-        if (!playerData.canStaffChat() && !(message.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
+        String preMessage = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
+        if (!playerData.canStaffChat() && !(preMessage.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
             return;
         }
+        if (preMessage.startsWith("#")) {
+            preMessage = preMessage.substring(1);
+        }
         asyncChatEvent.setCancelled(true);
+        final String message = preMessage;
         final String playerRank = WordUtils.capitalizeFully(LuckPermsUtilities.getRankViaCache(player.getUniqueId()).orElse(""));
         Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> onlinePlayer.sendMessage(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.chat.format").replace("%player_server%", "Here").replace("%player_rank%", playerRank).replace("%player%", player.getName())).replace("%message%", message)));
         this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).forEach(networkServer -> {
