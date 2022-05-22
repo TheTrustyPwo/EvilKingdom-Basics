@@ -74,7 +74,7 @@ public class AnnounceCommand extends CommandHandler {
             return;
         }
         final StringBuilder messageStringBuilder = new StringBuilder();
-        for (int i = 2; i < arguments.length; i++) {
+        for (int i = 1; i < arguments.length; i++) {
             if (i == (arguments.length - 1)) {
                 messageStringBuilder.append(arguments[i]);
             } else {
@@ -91,7 +91,7 @@ public class AnnounceCommand extends CommandHandler {
             return;
         }
         if (targetServerName.equals("network")) {
-            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.announce.messages.success.player").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%message%", message).replace("%server%", "here"))));
+            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.announce.messages.success.player").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%message%", message).replace("%server%", "network"))));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.announce.sounds.success.player.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.announce.sounds.success.player.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.announce.sounds.success.player.pitch"));
             Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> onlinePlayer.getUniqueId() != player.getUniqueId()).forEach(onlinePlayer -> {
                 this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.announce.messages.success.online-players").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", player.getName()).replace("%message%", message))));
