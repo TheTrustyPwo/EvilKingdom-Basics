@@ -109,6 +109,7 @@ public class NetworkServer {
             NetworkServerStatus status = null;
             switch (pterodactylStatus.get()) {
                 case "starting" -> status = NetworkServerStatus.STARTING;
+                case "stopping" -> status = NetworkServerStatus.STOPPING;
                 case "running" -> status = NetworkServerStatus.ONLINE;
                 case "offline" -> status = NetworkServerStatus.OFFLINE;
             }
@@ -118,6 +119,7 @@ public class NetworkServer {
                 switch (status) {
                     case ONLINE -> preFormattedStatus = "&aonline";
                     case STARTING -> preFormattedStatus = "&bstarting";
+                    case STOPPING -> preFormattedStatus = "&3stopping";
                     case OFFLINE -> preFormattedStatus = "&coffline";
                 }
                 final String formattedStatus = preFormattedStatus;

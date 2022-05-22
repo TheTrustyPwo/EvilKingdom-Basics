@@ -53,9 +53,14 @@ public class ChatListener implements Listener {
     /**
      * The listener for player chats.
      */
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerChat(final AsyncChatEvent asyncChatEvent) {
         final Player player = asyncChatEvent.getPlayer();
+        final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
+        final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
+        if (playerData.canStaffChat() || (message.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
+            return;
+        }
         asyncChatEvent.setCancelled(true);
         final SelfData selfData = SelfData.getViaCache().get();
         if (!selfData.canChat() && !LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.mutechat.bypass")) {
@@ -63,7 +68,6 @@ public class ChatListener implements Listener {
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.server-chat-disabled.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.server-chat-disabled.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.server-chat-disabled.sound.pitch"));
             return;
         }
-        final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
         if (!playerData.canChat()) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.chat.global.invalid-chat.player-chat-disabled.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.player-chat-disabled.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.player-chat-disabled.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.player-chat-disabled.sound.pitch"));
@@ -77,7 +81,6 @@ public class ChatListener implements Listener {
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.player-on-cooldown.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.player-on-cooldown.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.player-on-cooldown.sound.pitch"));
             return;
         }
-        final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
         if (StringUtilities.contains(message, new ArrayList<String>(this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.chat.filtered-words")))) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.chat.global.invalid-chat.message-filtered.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
             player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.invalid-chat.message-filtered.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.chat.global.invalid-chat.message-filtered.sound.pitch"));
@@ -123,10 +126,10 @@ public class ChatListener implements Listener {
                 return onlinePlayerData.canChat() && !onlinePlayerData.getIgnored().contains(player.getUniqueId());
             }).forEach(onlinePlayer -> onlinePlayer.sendMessage(format));
         }
-        if (selfData.getChatSlow() > -1L) {
-            final Cooldown cooldown = new Cooldown(this.plugin, "player-" + playerData.getUUID() + "-chat", selfData.getChatSlow());
+        selfData.getChatSlow().ifPresent(chatSlow -> {
+            final Cooldown cooldown = new Cooldown(this.plugin, "player-" + playerData.getUUID() + "-chat", chatSlow);
             cooldown.start();
-        }
+        });
     }
 
 }

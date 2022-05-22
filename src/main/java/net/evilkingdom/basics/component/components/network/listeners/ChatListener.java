@@ -5,6 +5,7 @@ package net.evilkingdom.basics.component.components.network.listeners;
  */
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import io.papermc.paper.text.PaperComponents;
 import net.evilkingdom.basics.Basics;
@@ -63,18 +64,21 @@ public class ChatListener implements Listener {
     public void onPlayerChat(final AsyncChatEvent asyncChatEvent) {
         final Player player = asyncChatEvent.getPlayer();
         final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
-        if (!playerData.canStaffChat()) {
+        final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
+        if (!playerData.canStaffChat() || !(message.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
             return;
         }
         asyncChatEvent.setCancelled(true);
         final String playerRank = WordUtils.capitalizeFully(LuckPermsUtilities.getRankViaCache(player.getUniqueId()).orElse(""));
-        final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
-        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> onlinePlayer.sendMessage(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.chat.format").replace("%player_rank%", playerRank).replace("%player%", player.getName())).replace("%message%", message)));
+        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> onlinePlayer.sendMessage(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.chat.format").replace("%player_server%", "Here").replace("%player_rank%", playerRank).replace("%player%", player.getName())).replace("%message%", message)));
         this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(networkServer -> networkServer.getStatus() == NetworkServerStatus.ONLINE).forEach(networkServer -> {
             final TransmissionImplementor transmissionImplementor = TransmissionImplementor.get(this.plugin);
             final TransmissionSite transmissionSite = transmissionImplementor.getSites().stream().filter(innerTransmissionSite -> innerTransmissionSite.getName().equals("basics")).findFirst().get();
             final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(networkServer.getName())).findFirst().get();
-            final Transmission staffChatTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "staff_chat=" + player.getUniqueId() + "~" + message);
+            final JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("player", player.getUniqueId().toString());
+            jsonObject.addProperty("message", message);
+            final Transmission staffChatTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "staff_chat=" + new Gson().toJson(jsonObject));
             staffChatTransmission.send();
         });
     }

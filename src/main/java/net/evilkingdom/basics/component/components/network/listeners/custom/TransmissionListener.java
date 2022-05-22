@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.network.listeners.custom;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.papermc.paper.text.PaperComponents;
 import net.evilkingdom.basics.Basics;
@@ -69,40 +70,57 @@ public class TransmissionListener extends TransmissionHandler {
             }
             case MESSAGE -> {
                 switch (data.split("=")[0]) {
-                    case "player_message" -> {
-                        final Player player = Bukkit.getPlayer(UUID.fromString(data.split("=")[1].split("~")[0]));
-                        final JsonArray jsonArray = JsonParser.parseString(data.split("=")[1].split("~")[1]).getAsJsonArray();
-                        jsonArray.forEach(jsonElement -> player.sendMessage(StringUtilities.colorize(jsonElement.getAsString())));
+                    case "announce" -> {
+                        final JsonObject jsonObject = JsonParser.parseString(data.split("=")[1]).getAsJsonObject();
+                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(jsonObject.get("player").getAsString()));
+                        final String message = jsonObject.get("message").getAsString();
+                        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.announce.messages.success.online-players").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string.replace("%player%", offlinePlayer.getName()).replace("%message%", message))));
+                            onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.announce.sounds.success.online-players.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.announce.sounds.success.online-players.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.announce.sounds.success.online-players.pitch"));
+                        });
                     }
-                    case "player_sound" -> {
-                        final Player player = Bukkit.getPlayer(UUID.fromString(data.split("=")[1].split("~")[0]));
-                        final Sound sound = Sound.valueOf(data.split("=")[1].split("~")[1].split(":")[0]);
-                        final float volume = Float.parseFloat(data.split("=")[1].split("~")[1].split(":")[1]);
-                        final float pitch = Float.parseFloat(data.split("=")[1].split("~")[1].split(":")[2]);
-                        player.playSound(player.getLocation(), sound, volume, pitch);
+                    case "server_stop" -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                    case "server_restart" -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "restart");
+                    case "staff_chat" -> {
+                        final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(server.getName())).findFirst().get();
+                        final JsonObject jsonObject = JsonParser.parseString(data.split("=")[1]).getAsJsonObject();
+                        final Player player = Bukkit.getPlayer(UUID.fromString(jsonObject.get("player").getAsString()));
+                        final String message = jsonObject.get("message").getAsString();
+                        final String playerRank = WordUtils.capitalizeFully(LuckPermsUtilities.getRankViaCache(player.getUniqueId()).orElse(""));
+                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> onlinePlayer.sendMessage(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.chat.format").replace("%server%", networkServer.getPrettifiedName()).replace("%player_rank%", playerRank).replace("%player%", player.getName())).replace("%message%", message)));
                     }
                     case "player_send" -> {
-                        final Player player = Bukkit.getPlayer(UUID.fromString(data.split("=")[1].split("~")[0]));
-                        final String sendServer = data.split("=")[1].split("~")[1].split(":")[0];
+                        final JsonObject jsonObject = JsonParser.parseString(data.split("=")[1]).getAsJsonObject();
+                        final Player player = Bukkit.getPlayer(UUID.fromString(jsonObject.get("player").getAsString()));
+                        final String sendServer = jsonObject.get("server").getAsString();
                         final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(internalTransmissionServer -> internalTransmissionServer.getName().equals(sendServer)).findFirst().get();
                         transmissionSite.send(player, transmissionServer);
                     }
-                    case "server_shutdown" -> {
-                        final ArrayList<OfflinePlayer> offlinePlayers = new ArrayList<OfflinePlayer>();
-                        final JsonArray jsonArray = JsonParser.parseString(data.split("=")[1]).getAsJsonArray();
-                        jsonArray.forEach(jsonElement -> offlinePlayers.add(Bukkit.getOfflinePlayer(UUID.fromString(jsonElement.getAsString()))));
-                        Bukkit.getScheduler().runTaskLater(this.plugin, () -> offlinePlayers.stream().filter(offlinePlayer -> offlinePlayer.isOnline()).forEach(offlinePlayer -> {
-                            final Player onlinePlayer = offlinePlayer.getPlayer();
-                            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string)));
-                            onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
-                        }), 60L);
-                    }
-                    case "staff_chat" -> {
-                        final NetworkServer networkServer = this.plugin.getComponentManager().getNetworkComponent().getServers().stream().filter(innerNetworkServer -> innerNetworkServer.getName().equals(server.getName())).findFirst().get();
-                        final Player player = Bukkit.getPlayer(UUID.fromString(data.split("=")[1].split("~")[0]));
-                        final String message = data.split("=")[1].split("~")[1];
-                        final String playerRank = WordUtils.capitalizeFully(LuckPermsUtilities.getRankViaCache(player.getUniqueId()).orElse(""));
-                        Bukkit.getOnlinePlayers().stream().filter(onlinePlayer -> LuckPermsUtilities.getPermissionsViaCache(onlinePlayer.getUniqueId()).contains("basics.network.staff")).forEach(onlinePlayer -> onlinePlayer.sendMessage(StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.staff.chat.format").replace("%server%", networkServer.getPrettifiedName()).replace("%player_rank%", playerRank).replace("%player%", player.getName())).replace("%message%", message)));
+                    case "player_sent" -> {
+                        final JsonObject jsonObject = JsonParser.parseString(data.split("=")[1]).getAsJsonObject();
+                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(jsonObject.get("player").getAsString()));
+                        if (!offlinePlayer.isOnline()) {
+                            return;
+                        }
+                        final Player player = offlinePlayer.getPlayer();
+                        final String reason = jsonObject.get("reason").getAsString();
+                        switch (reason) {
+                            case "server_stop" -> Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
+                                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
+                            }, 60L);
+                            case "send_command" -> {
+                                final OfflinePlayer sender = Bukkit.getOfflinePlayer(UUID.fromString(jsonObject.get("sender").getAsString()));
+                                Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.success.target").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", sender.getName()).replace("%server%", this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.prettified-name")))));
+                                    player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.send.sounds.success.target.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.success.target.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.success.target.pitch"));
+                                }, 60L);
+                            }
+                            case "server_command" -> Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.server.messages.success").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%server%", this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.prettified-name")))));
+                                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.server.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.pitch"));
+                            }, 60L);
+                        }
                     }
                 }
             }

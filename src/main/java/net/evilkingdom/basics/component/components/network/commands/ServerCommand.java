@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.network.commands;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.network.enums.NetworkServerStatus;
 import net.evilkingdom.basics.component.components.network.objects.NetworkServer;
@@ -91,6 +92,7 @@ public class ServerCommand extends CommandHandler {
             String preStatus = null;
             switch (networkServer.getStatus()) {
                 case STARTING -> preStatus = "&bstarting";
+                case STOPPING -> preStatus = "&3stopping";
                 case OFFLINE -> preStatus = "&coffline";
             }
             final String status = preStatus;
@@ -100,17 +102,11 @@ public class ServerCommand extends CommandHandler {
         }
         final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(networkServer.getName())).findFirst().get();
         transmissionSite.send(player, transmissionServer);
-        CompletableFuture.runAsync(() -> {
-            while (!networkServer.getOnlinePlayerUUIDs().contains(player.getUniqueId())) {
-                //It won't send the message until the player is registered as connected to the server.
-            }
-            final JsonArray jsonArray = new JsonArray();
-            this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.server.messages.success").forEach(string -> jsonArray.add(string.replace("%player%", player.getName()).replace("%server%", networkServer.getPrettifiedName())));
-            final Transmission messageTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_message=" + player.getUniqueId() + "~" + new Gson().toJson(jsonArray));
-            final Transmission soundTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sound=" + player.getUniqueId() + "~" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.server.sounds.success.sound") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.volume") + ":" + this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.pitch"));
-            messageTransmission.send();
-            soundTransmission.send();
-        });
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("player", player.getUniqueId().toString());
+        jsonObject.addProperty("reason", "server_command");
+        final Transmission sentTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sent=" + new Gson().toJson(jsonObject));
+        sentTransmission.send();
     }
 
     /**

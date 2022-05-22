@@ -72,6 +72,7 @@ public class NetworkComponent {
         new FindCommand().register();
         new ServerCommand().register();
         new StaffChatCommand().register();
+        new AnnounceCommand().register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aRegistered commands."));
     }
 

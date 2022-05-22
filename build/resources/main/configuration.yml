@@ -79,7 +79,7 @@ components:
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
           #The message sent when the player enters an invalid usage.
           invalid-usage:
@@ -87,7 +87,7 @@ components:
 
           #The message sent when the mutechat is a success.
           #Variables:
-            # » %status% ~ The chat's status.
+          # » %status% ~ The chat's status.
           success:
 
             #The message sent to the player when the mutechat is a success.
@@ -165,7 +165,7 @@ components:
           #Variables:
           # » %time_left% ~ The cooldown's time left.
           message:
-            - "&6&lPrison &7» &eInvalid chat, &eyou are on &6cooldown &efor another &6%time_left%&e."
+            - "&6&lBasics &7» &eInvalid chat, &eyou are on &6cooldown &efor another &6%time_left%&e."
 
           #The sound sent when the player is on cooldown for chatting.
           sound:
@@ -207,7 +207,7 @@ components:
           #Variables:
           # » %time_left% ~ The cooldown's time left.
           message:
-            - "&6&lPrison &7» &eInvalid chat, you cannot chat whilst chat is &6disabled&e."
+            - "&6&lBasics &7» &eInvalid chat, you cannot chat whilst chat is &6disabled&e."
 
           #The sound sent when servers chat's state is disabled.
           sound:
@@ -349,9 +349,13 @@ components:
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
-          #The message sent when the stop is a success.
+          #The message sent when the stop is invalid (the server is already stopping).
+          invalid-stop:
+            - "&6&lBasics &7» &eInvalid stop, the server is already &6stopping&e..."
+
+          #The message sent when the stop is a success. //ADD ANNOUNCEMENT GLOBALLY AND /STOP <SERVER> (ALSO DO FOR RESTART IDIOT)
           success:
             - "&6&lBasics &7» &eStopping the server..."
 
@@ -397,11 +401,70 @@ components:
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the restart is invalid (the server is already stopping).
+          invalid-restart:
+            - "&6&lBasics &7» &eInvalid restart, the server is already &6stopping&e..."
 
           #The message sent when the stop is a success.
           success:
             - "&6&lBasics &7» &eRestarting the server..."
+
+
+      #The "/staffchat" command.
+      #The permission for this command is "basics.network.commands.staffchat".
+      staffchat:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the mutechat is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/staffchat&e."
+
+          #The message sent when the staffchat is a success.
+          #Variables:
+          # » %status% ~ The chat's status.
+          success:
+            - "&6&lBasics &7» &eYou have &6%status% &eyour staff chat."
 
       #The "/send" command.
       #The permission for this command is "basics.network.commands.send".
@@ -465,7 +528,7 @@ components:
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
           #The message sent when the targeted server is invalid.
           #Variables:
@@ -509,6 +572,101 @@ components:
             #The message sent to the target (when they have completed connecting to the target server).
             target:
               - "&6&lBasics &7» &eYou have been sent to &6%server% &eby &6%player%&e."
+
+      #The "/announce" command.
+      #The permission for this command is "basics.network.commands.announce".
+      announce:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the send is a success.
+          success:
+
+            #The sound sent to the player.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online players.
+            online-players:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/announce <player> <message>&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the targeted server is invalid.
+          #Variables:
+          # » %server% ~ The targeted server.
+          invalid-server:
+
+            #The message sent when the targeted server could not be located (not a network server).
+            not-located:
+              - "&6&lBasics &7» &eInvalid server, &6%server% &efailed to be located."
+
+            #The message sent when the targeted server is not online.
+            #Variables:
+            # » %status% ~ The targeted server's status.
+            offline:
+              - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently %status%&e."
+
+          #The message sent when the announce is a success.
+            # » %message% ~ The announcement's message.
+          success:
+
+            #The message sent to the player.
+            # » %server% ~ The targeted server.
+            player:
+              - "&6&lBasics &7» &eYou have an announcement to &6%server% &ewith the message ""&6%message%&e""."
+
+            #The message sent to the online players.
+            # » %player% ~ The player that sent the announcement.
+            online-players:
+              - ""
+              - "&6&lAnnouncement &7| &eBy &f%player%"
+              - "&6 » &e%message%"
 
       #The "/server" command.
       #The permission for this command is "basics.network.commands.server".
@@ -556,7 +714,7 @@ components:
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
           #The message sent when the targeted server is invalid.
           #Variables:
@@ -629,7 +787,7 @@ components:
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
           #The message sent when the targeted player is invalid (not online).
           #Variables:
@@ -648,11 +806,8 @@ components:
     #Configuration for shutdowns.
     shutdowns:
 
-      #The lobby server.
-      lobby:
-
-        #The lobby server's name.
-        name: "lobby"
+      #The lobby server's name.
+      lobby: "lobby"
 
       #The kick when the server shuts down.
       kick:
@@ -726,6 +881,17 @@ components:
     #Configuration for staff related stuff.
     #This only directly affects players with the permission "basics.network.staff".
     staff:
+
+      #Configuration for the staff chat.
+      chat:
+
+        #The format of the staff chat.
+        #Variables:
+        # » %player% ~ The player.
+        # » %player_rank% ~ The player's rank.
+        # » %player_server% ~ The player's server.
+        # » %message% ~ The message that was sent.
+        format: "&6&l%player_server% &7| &6(%player_rank%&6)&e %player% &7»&f %message%"
 
       #Configuration for staff connections.
       connection:
@@ -877,11 +1043,11 @@ components:
 
           #The message sent when the player's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
           #The message sent when the setspawn is a success.
           success:
-            - "&6&lPrison &7» &eYou have &6set&e the &6spawn&e!"
+            - "&6&lBasics &7» &eYou have &6set&e the &6spawn&e!"
 
       #The "/spawn" command.
       #There is no permission for this command unless a target is selected- which if there is it is "basics.teleport.commands.spawn.targeted".
@@ -945,7 +1111,7 @@ components:
 
           #The message sent when the player's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
-            - "&6&lPrison &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
 
           #The message sent when the targeted player is invalid (not online).
           #Variables:

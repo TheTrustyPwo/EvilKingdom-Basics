@@ -76,6 +76,7 @@ public class ListCommand extends CommandHandler {
                     switch (networkServer.getStatus()) {
                         case ONLINE -> status = "&aOnline";
                         case STARTING -> status = "&bStarting";
+                        case STOPPING -> status = "&3Stopping";
                         case OFFLINE -> status = "&cOffline";
                     }
                 }

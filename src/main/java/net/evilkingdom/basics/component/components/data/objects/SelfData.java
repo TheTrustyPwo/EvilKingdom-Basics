@@ -4,11 +4,10 @@ package net.evilkingdom.basics.component.components.data.objects;
  * Made with love by https://kodirati.com/.
  */
 
+import com.google.gson.JsonObject;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.commons.datapoint.DataImplementor;
 import net.evilkingdom.commons.datapoint.objects.Datapoint;
-import net.evilkingdom.commons.datapoint.objects.DatapointModel;
-import net.evilkingdom.commons.datapoint.objects.DatapointObject;
 import net.evilkingdom.commons.datapoint.objects.Datasite;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,7 +26,7 @@ public class SelfData {
 
     private Location spawn;
     private boolean canChat;
-    private long chatSlow;
+    private Optional<Long> chatSlow;
 
     private static HashSet<SelfData> cache = new HashSet<SelfData>();
 
@@ -39,7 +38,7 @@ public class SelfData {
 
         this.spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
         this.canChat = true;
-        this.chatSlow = -1L;
+        this.chatSlow = Optional.empty();
     }
 
     /**
@@ -67,28 +66,20 @@ public class SelfData {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
-        return datapoint.get("self").thenApply(optionalDatapointModel -> {
-            if (optionalDatapointModel.isEmpty()) {
+        return datapoint.get("self").thenApply(optionalJsonObject -> {
+            if (optionalJsonObject.isEmpty()) {
                 return false;
             }
-            final DatapointModel datapointModel = optionalDatapointModel.get();
-            if (datapointModel.getObjects().containsKey("spawn")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("spawn");
-                final World world = Bukkit.getWorld(((String) datapointObject.getInnerObjects().get("world").getObject()));
-                final double x = (double) datapointObject.getInnerObjects().get("x").getObject();
-                final double y = (double) datapointObject.getInnerObjects().get("y").getObject();
-                final double z = (double) datapointObject.getInnerObjects().get("z").getObject();
-                final float yaw = ((Double) datapointObject.getInnerObjects().get("yaw").getObject()).floatValue();
-                final float pitch = ((Double) datapointObject.getInnerObjects().get("pitch").getObject()).floatValue();
-                this.spawn = new Location(world, x, y, z, yaw, pitch);
+            final JsonObject jsonObject = optionalJsonObject.get();
+            if (jsonObject.has("spawn")) {
+                final JsonObject spawnJsonObject = jsonObject.get("spawn").getAsJsonObject();
+                this.spawn = new Location(Bukkit.getWorld(spawnJsonObject.get("world").getAsString()), spawnJsonObject.get("x").getAsDouble(), spawnJsonObject.get("y").getAsDouble(), spawnJsonObject.get("z").getAsDouble(), (float) spawnJsonObject.get("yaw").getAsDouble(), (float) spawnJsonObject.get("pitch").getAsDouble());
             }
-            if (datapointModel.getObjects().containsKey("canChat")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("canChat");
-                this.canChat = (Boolean) datapointObject.getObject();
+            if (jsonObject.has("canChat")) {
+                this.canChat = jsonObject.get("canChat").getAsBoolean();
             }
-            if (datapointModel.getObjects().containsKey("chatSlow")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("chatSlow");
-                this.chatSlow = (Long) datapointObject.getObject();
+            if (jsonObject.has("chatSlow")) {
+                this.chatSlow = Optional.of(jsonObject.get("chatSlow").getAsLong());
             }
             return true;
         });
@@ -100,21 +91,22 @@ public class SelfData {
      * @param asynchronous ~ If the save is asynchronous (should always be unless it's an emergency saves).
      */
     public void save(final boolean asynchronous) {
-        final DatapointModel datapointModel = new DatapointModel("self");
-        final DatapointObject spawnDatapointObject = new DatapointObject();
-        spawnDatapointObject.getInnerObjects().put("world", new DatapointObject(this.spawn.getWorld().getName()));
-        spawnDatapointObject.getInnerObjects().put("x", new DatapointObject(this.spawn.getX()));
-        spawnDatapointObject.getInnerObjects().put("y", new DatapointObject(this.spawn.getY()));
-        spawnDatapointObject.getInnerObjects().put("z", new DatapointObject(this.spawn.getZ()));
-        spawnDatapointObject.getInnerObjects().put("yaw", new DatapointObject(this.spawn.getYaw()));
-        spawnDatapointObject.getInnerObjects().put("pitch", new DatapointObject(this.spawn.getPitch()));
-        datapointModel.getObjects().put("spawn", spawnDatapointObject);
-        datapointModel.getObjects().put("canChat", new DatapointObject(this.canChat));
-        datapointModel.getObjects().put("chatSlow", new DatapointObject(this.chatSlow));
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("_id", "self");
+        final JsonObject spawnJsonObject = new JsonObject();
+        spawnJsonObject.addProperty("world", this.spawn.getWorld().getName());
+        spawnJsonObject.addProperty("x", this.spawn.getX());
+        spawnJsonObject.addProperty("y", this.spawn.getY());
+        spawnJsonObject.addProperty("z", this.spawn.getZ());
+        spawnJsonObject.addProperty("yaw", ((double) this.spawn.getYaw()));
+        spawnJsonObject.addProperty("pitch", ((double) this.spawn.getPitch()));
+        jsonObject.add("spawn", spawnJsonObject);
+        jsonObject.addProperty("canChat", this.canChat);
+        this.chatSlow.ifPresent(chatSlow -> jsonObject.addProperty("chatSlow", chatSlow));
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
-        datapoint.save(datapointModel, asynchronous);
+        datapoint.save(jsonObject, asynchronous);
     }
 
     /**
@@ -138,9 +130,9 @@ public class SelfData {
     /**
      * Allows you to set the data's chat slow.
      *
-     * @param canChat ~ The data's chat slow to set.
+     * @param chatSlow ~ The data's chat slow to set.
      */
-    public void setChatSlow(final long chatSlow) {
+    public void setChatSlow(final Optional<Long> chatSlow) {
         this.chatSlow = chatSlow;
     }
 
@@ -149,7 +141,7 @@ public class SelfData {
      *
      * @return The data's chat slow.
      */
-    public Long getChatSlow() {
+    public Optional<Long> getChatSlow() {
         return this.chatSlow;
     }
 

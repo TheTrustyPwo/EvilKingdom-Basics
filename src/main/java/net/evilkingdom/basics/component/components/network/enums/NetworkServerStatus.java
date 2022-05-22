@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.network.enums;
 
 public enum NetworkServerStatus {
     OFFLINE,
+    STOPPING,
     STARTING,
     ONLINE;
 }

@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.network.commands;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.network.enums.NetworkServerStatus;
 import net.evilkingdom.basics.component.components.network.objects.NetworkServer;
@@ -49,7 +50,7 @@ public class RestartCommand extends CommandHandler {
      * Allows you to register the command.
      */
     public void register() {
-        final Command command = new Command(this.plugin, "restart", new ArrayList<String>(List.of("saferestart")), this);
+        final Command command = new Command(this.plugin, "restart", this);
         command.register();
     }
 
@@ -69,7 +70,7 @@ public class RestartCommand extends CommandHandler {
                 return;
             }
         }
-        if (arguments.length != 0) {
+        if (arguments.length != 1) {
             this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.restart.messages.invalid-usage").forEach(string -> sender.sendMessage(StringUtilities.colorize(string)));
             if (sender instanceof Player) {
                 final Player player = (Player) sender;
@@ -116,13 +117,14 @@ public class RestartCommand extends CommandHandler {
             Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.kick(Component.text(kickMessage.toString())));
         } else {
             final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(lobbyName)).findFirst().get();
-            final JsonArray jsonArray = new JsonArray();
             Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
                 transmissionSite.send(onlinePlayer, transmissionServer);
-                jsonArray.add(onlinePlayer.getUniqueId().toString());
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("player", onlinePlayer.getUniqueId().toString());
+                jsonObject.addProperty("reason", "server_stop");
+                final Transmission sentTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sent=" + new Gson().toJson(jsonObject));
+                sentTransmission.send();
             });
-            final Transmission shutdownTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "server_shutdown=" + new Gson().toJson(jsonArray));
-            shutdownTransmission.send();
         }
         CompletableFuture.runAsync(() -> {
             while (!Bukkit.getOnlinePlayers().isEmpty()) {

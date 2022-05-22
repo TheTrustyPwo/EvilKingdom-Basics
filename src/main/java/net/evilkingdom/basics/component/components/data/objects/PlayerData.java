@@ -4,13 +4,13 @@ package net.evilkingdom.basics.component.components.data.objects;
  * Made with love by https://kodirati.com/.
  */
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.commons.cooldown.CooldownImplementor;
 import net.evilkingdom.commons.cooldown.objects.Cooldown;
 import net.evilkingdom.commons.datapoint.DataImplementor;
 import net.evilkingdom.commons.datapoint.objects.Datapoint;
-import net.evilkingdom.commons.datapoint.objects.DatapointModel;
-import net.evilkingdom.commons.datapoint.objects.DatapointObject;
 import net.evilkingdom.commons.datapoint.objects.Datasite;
 
 import java.util.ArrayList;
@@ -72,34 +72,27 @@ public class PlayerData {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
-        return datapoint.get(this.uuid.toString()).thenApply(optionalDatapointModel -> {
-            if (optionalDatapointModel.isEmpty()) {
+        return datapoint.get(this.uuid.toString()).thenApply(optionalJsonObject -> {
+            if (optionalJsonObject.isEmpty()) {
                 return false;
             }
-            final DatapointModel datapointModel = optionalDatapointModel.get();
-            if (datapointModel.getObjects().containsKey("canChat")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("canChat");
-                this.canChat = (Boolean) datapointObject.getObject();
+            final JsonObject jsonObject = optionalJsonObject.get();
+            if (jsonObject.has("canChat")) {
+                this.canChat = jsonObject.get("canChat").getAsBoolean();
             }
-            if (datapointModel.getObjects().containsKey("canMessage")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("canMessage");
-                this.canMessage = (Boolean) datapointObject.getObject();
+            if (jsonObject.has("canMessage")) {
+                this.canChat = jsonObject.get("canMessage").getAsBoolean();
             }
-            if (datapointModel.getObjects().containsKey("canStaffChat")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("canStaffChat");
-                this.canStaffChat = (Boolean) datapointObject.getObject();
+            if (jsonObject.has("canStaffChat")) {
+                this.canChat = jsonObject.get("canStaffChat").getAsBoolean();
             }
-            if (datapointModel.getObjects().containsKey("ignored")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("ignored");
-                this.ignored = new ArrayList<UUID>(datapointObject.getInnerObjects().values().stream().map(innerDatapointObject -> UUID.fromString(((String) innerDatapointObject.getObject()))).collect(Collectors.toList()));
+            if (jsonObject.has("ignored")) {
+                jsonObject.get("ignored").getAsJsonArray().forEach(jsonElement -> this.ignored.add(UUID.fromString(jsonElement.getAsString())));
             }
-            if (datapointModel.getObjects().containsKey("cooldowns")) {
-                final DatapointObject datapointObject = datapointModel.getObjects().get("cooldowns");
-                datapointObject.getInnerObjects().values().forEach(innerDatapointObject -> {
-                    final String type = (String) innerDatapointObject.getInnerObjects().get("type").getObject();
-                    final long timeLeft = (long) innerDatapointObject.getInnerObjects().get("timeLeft").getObject();
-                    final Cooldown cooldown = new Cooldown(this.plugin, "player-" + this.uuid + "-" + type, timeLeft);
-                    this.cooldowns.add(cooldown);
+            if (jsonObject.has("cooldowns")) {
+                jsonObject.get("cooldowns").getAsJsonArray().forEach(jsonElement -> {
+                    final JsonObject cooldownJsonObject = jsonElement.getAsJsonObject();
+                    this.cooldowns.add(new Cooldown(this.plugin, "player-" + this.uuid + "-" + cooldownJsonObject.get("type").getAsString(), cooldownJsonObject.get("timeLeft").getAsLong()));
                 });
             }
             return true;
@@ -112,28 +105,26 @@ public class PlayerData {
      * @param asynchronous ~ If the save is asynchronous (should always be unless it's an emergency saves).
      */
     public void save(final boolean asynchronous) {
-        final DatapointModel datapointModel = new DatapointModel(this.uuid.toString());
-        datapointModel.getObjects().put("canMessage", new DatapointObject(this.canMessage));
-        datapointModel.getObjects().put("canChat", new DatapointObject(this.canChat));
-        datapointModel.getObjects().put("canStaffChat", new DatapointObject(this.canStaffChat));
-        final DatapointObject ignoredDatapointObject = new DatapointObject();
-        for (int i = 0; i < this.ignored.size(); i++) {
-            ignoredDatapointObject.getInnerObjects().put(String.valueOf(i), new DatapointObject(this.ignored.get(i).toString()));
-        }
-        datapointModel.getObjects().put("ignored", ignoredDatapointObject);
-        final DatapointObject cooldownsDatapointObject = new DatapointObject();
-        for (int i = 0; i < this.getCooldowns().size(); i++) {
-            final Cooldown cooldown = this.getCooldowns().get(i);
-            final DatapointObject cooldownDatapointObject = new DatapointObject();
-            cooldownDatapointObject.getInnerObjects().put("type", new DatapointObject(cooldown.getIdentifier().replaceFirst("player-" + this.uuid + "-", "")));
-            cooldownDatapointObject.getInnerObjects().put("timeLeft", new DatapointObject(cooldown.getTimeLeft()));
-            cooldownsDatapointObject.getInnerObjects().put(String.valueOf(i), cooldownDatapointObject);
-        }
-        datapointModel.getObjects().put("cooldowns", cooldownsDatapointObject);
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("_id", this.uuid.toString());
+        jsonObject.addProperty("canMessage", this.canMessage);
+        jsonObject.addProperty("canChat", this.canChat);
+        jsonObject.addProperty("canStaffChat", this.canStaffChat);
+        final JsonArray ignoredJsonArray = new JsonArray();
+        this.ignored.forEach(uuid -> ignoredJsonArray.add(uuid.toString()));
+        jsonObject.add("ignored", ignoredJsonArray);
+        final JsonArray cooldownsJsonArray = new JsonArray();
+        this.getCooldowns().forEach(cooldown -> {
+            final JsonObject cooldownJsonObject = new JsonObject();
+            cooldownJsonObject.addProperty("type", cooldown.getIdentifier().replaceFirst("player-" + this.uuid + "-", ""));
+            cooldownJsonObject.addProperty("timeLeft", cooldown.getTimeLeft());
+            cooldownsJsonArray.add(cooldownJsonObject);
+        });
+        jsonObject.add("cooldowns", cooldownsJsonArray);
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
-        datapoint.save(datapointModel, asynchronous);
+        datapoint.save(jsonObject, asynchronous);
     }
 
     /**

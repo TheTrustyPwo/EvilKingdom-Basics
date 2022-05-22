@@ -63,7 +63,7 @@ public class StaffChatCommand extends CommandHandler {
         }
         final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
         final String status;
-        if (playerData.canChat()) {
+        if (playerData.canStaffChat()) {
             status = "&cdisabled";
             playerData.setCanStaffChat(false);
         } else {

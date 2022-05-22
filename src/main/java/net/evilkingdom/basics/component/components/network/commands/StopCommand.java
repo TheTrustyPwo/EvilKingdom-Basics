@@ -6,6 +6,7 @@ package net.evilkingdom.basics.component.components.network.commands;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.evilkingdom.basics.Basics;
 import net.evilkingdom.basics.component.components.data.objects.SelfData;
 import net.evilkingdom.basics.component.components.network.enums.NetworkServerStatus;
@@ -51,7 +52,7 @@ public class StopCommand extends CommandHandler {
      * Allows you to register the command.
      */
     public void register() {
-        final Command command = new Command(this.plugin, "stop", new ArrayList<String>(List.of("safestop")), this);
+        final Command command = new Command(this.plugin, "stop", this);
         command.register();
     }
 
@@ -122,13 +123,14 @@ public class StopCommand extends CommandHandler {
             });
         } else {
             final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(innerTransmissionServer -> innerTransmissionServer.getName().equals(lobbyName)).findFirst().get();
-            final JsonArray jsonArray = new JsonArray();
             Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
                 transmissionSite.send(onlinePlayer, transmissionServer);
-                jsonArray.add(onlinePlayer.getUniqueId().toString());
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("player", onlinePlayer.getUniqueId().toString());
+                jsonObject.addProperty("reason", "server_stop");
+                final Transmission sentTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "player_sent=" + new Gson().toJson(jsonObject));
+                sentTransmission.send();
             });
-            final Transmission shutdownTransmission = new Transmission(transmissionSite, transmissionServer, "basics", TransmissionType.MESSAGE, UUID.randomUUID(), "server_shutdown=" + new Gson().toJson(jsonArray));
-            shutdownTransmission.send();
         }
         CompletableFuture.runAsync(() -> {
             while (!Bukkit.getOnlinePlayers().isEmpty()) {
