@@ -65,7 +65,7 @@ public class ChatListener implements Listener {
         final Player player = asyncChatEvent.getPlayer();
         final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
         final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
-        if (!playerData.canStaffChat() || !(message.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
+        if (!playerData.canStaffChat() && !(message.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
             return;
         }
         asyncChatEvent.setCancelled(true);

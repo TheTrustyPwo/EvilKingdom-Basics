@@ -81,10 +81,10 @@ public class PlayerData {
                 this.canChat = jsonObject.get("canChat").getAsBoolean();
             }
             if (jsonObject.has("canMessage")) {
-                this.canChat = jsonObject.get("canMessage").getAsBoolean();
+                this.canMessage = jsonObject.get("canMessage").getAsBoolean();
             }
             if (jsonObject.has("canStaffChat")) {
-                this.canChat = jsonObject.get("canStaffChat").getAsBoolean();
+                this.canStaffChat = jsonObject.get("canStaffChat").getAsBoolean();
             }
             if (jsonObject.has("ignored")) {
                 jsonObject.get("ignored").getAsJsonArray().forEach(jsonElement -> this.ignored.add(UUID.fromString(jsonElement.getAsString())));
