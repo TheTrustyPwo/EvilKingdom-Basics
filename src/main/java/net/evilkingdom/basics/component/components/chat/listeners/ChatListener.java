@@ -88,7 +88,7 @@ public class ChatListener implements Listener {
         }
         final String playerPrefix = LuckPermsUtilities.getPrefixViaCache(player.getUniqueId()).orElse("");
         final String playerSuffix = LuckPermsUtilities.getSuffixViaCache(player.getUniqueId()).orElse("");
-        String formattedSubMessage;
+        final String formattedSubMessage;
         if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").contains("%player_prison_rank%")) {
             final net.evilkingdom.prison.component.components.data.objects.PlayerData prisonPlayerData = net.evilkingdom.prison.component.components.data.objects.PlayerData.getViaCache(player.getUniqueId()).get();
             final String formattedPrisonRank = NumberUtilities.format(prisonPlayerData.getRank(), NumberFormatType.LETTERS);
@@ -96,9 +96,11 @@ public class ChatListener implements Listener {
         } else {
             formattedSubMessage = StringUtilities.colorize(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.chat.global.format").replace("%player_prefix%", playerPrefix).replace("%player%", player.getName()).replace("%player_suffix%", playerSuffix));
         }
-        String formattedMessage = message;
+        final String formattedMessage;
         if (LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.colorized")) {
             formattedMessage = StringUtilities.colorize(message);
+        } else {
+            formattedMessage = message;
         }
         if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getBoolean("components.chat.global.taggables.item.enabled") && ((message.contains("[i]") || message.contains("[item]")) && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.taggables.item"))) {
             final Component itemComponent;
@@ -126,10 +128,10 @@ public class ChatListener implements Listener {
                 return onlinePlayerData.canChat() && !onlinePlayerData.getIgnored().contains(player.getUniqueId());
             }).forEach(onlinePlayer -> onlinePlayer.sendMessage(format));
         }
-        selfData.getChatSlow().ifPresent(chatSlow -> {
-            final Cooldown cooldown = new Cooldown(this.plugin, "player-" + playerData.getUUID() + "-chat", chatSlow);
+        if (selfData.getChatSlow().isPresent() && !LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.slowchat.bypass")) {
+            final Cooldown cooldown = new Cooldown(this.plugin, "player-" + playerData.getUUID() + "-chat", selfData.getChatSlow().get());
             cooldown.start();
-        });
+        }
     }
 
 }

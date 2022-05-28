@@ -631,7 +631,7 @@ components:
 
           #The message sent when the sender enters an invalid usage.
           invalid-usage:
-            - "&6&lBasics &7» &eInvalid usage, &etry &6/announce <player> <message>&e."
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/announce <server> <message>&e."
 
           #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
           invalid-permissions:
@@ -665,8 +665,9 @@ components:
             # » %player% ~ The player that sent the announcement.
             online-players:
               - ""
-              - "&6&lAnnouncement &7| &eBy &f%player%"
+              - "&6&lAnnouncement"
               - "&6 » &e%message%"
+              - ""
 
       #The "/server" command.
       #The permission for this command is "basics.network.commands.server".
