@@ -106,7 +106,6 @@ public class PlayerData {
      */
     public void save(final boolean asynchronous) {
         final JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("_id", this.uuid.toString());
         jsonObject.addProperty("canMessage", this.canMessage);
         jsonObject.addProperty("canChat", this.canChat);
         jsonObject.addProperty("canStaffChat", this.canStaffChat);
@@ -124,7 +123,7 @@ public class PlayerData {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
-        datapoint.save(jsonObject, asynchronous);
+        datapoint.save(jsonObject, this.uuid.toString(), asynchronous);
     }
 
     /**

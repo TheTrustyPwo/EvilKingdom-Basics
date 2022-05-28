@@ -320,11 +320,11 @@
 -            this.connection.disconnect(reason);
 +    public void disconnect(String s) {
 +        // Paper start
-+        this.disconnect(PaperAdventure.LEGACY_SECTION_UXRC.deserialize(s), org.bukkit.event.player.PlayerKickEvent.Cause.UNKNOWN);
++        this.disconnect(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(s), org.bukkit.event.player.PlayerKickEvent.Cause.UNKNOWN);
 +    }
 +
 +    public void disconnect(String s, PlayerKickEvent.Cause cause) {
-+        this.disconnect(PaperAdventure.LEGACY_SECTION_UXRC.deserialize(s), cause);
++        this.disconnect(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(s), cause);
 +    }
 +
 +    public void disconnect(final Component reason) {
@@ -1582,7 +1582,7 @@
 +                                } // else: no collision at all detected, why do we care?
 +                            }
 +                            if (!this.player.noPhysics && !this.player.isSleeping() && teleportBack) { // Paper end - optimise out extra getCubes
-+                                this.teleport(d3, d4, d5, f, f1);
++                                this.internalTeleport(d3, d4, d5, f, f1, Collections.emptySet(), false); // CraftBukkit - SPIGOT-1807: Don't call teleport event, when the client thinks the player is falling, because the chunks are not loaded on the client yet.
 +                            } else {
 +                                // CraftBukkit start - fire PlayerMoveEvent
 +                                // Rest to old location first

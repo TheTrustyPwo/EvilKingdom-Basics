@@ -92,7 +92,6 @@ public class SelfData {
      */
     public void save(final boolean asynchronous) {
         final JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("_id", "self");
         final JsonObject spawnJsonObject = new JsonObject();
         spawnJsonObject.addProperty("world", this.spawn.getWorld().getName());
         spawnJsonObject.addProperty("x", this.spawn.getX());
@@ -106,7 +105,7 @@ public class SelfData {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
         final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
-        datapoint.save(jsonObject, asynchronous);
+        datapoint.save(jsonObject, "self", asynchronous);
     }
 
     /**
