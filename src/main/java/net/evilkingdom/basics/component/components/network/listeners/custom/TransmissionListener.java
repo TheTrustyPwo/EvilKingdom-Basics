@@ -99,28 +99,28 @@ public class TransmissionListener extends TransmissionHandler {
                     case "player_sent" -> {
                         final JsonObject jsonObject = JsonParser.parseString(data.split("=")[1]).getAsJsonObject();
                         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(jsonObject.get("player").getAsString()));
-                        if (!offlinePlayer.isOnline()) {
-                            return;
-                        }
-                        final Player player = offlinePlayer.getPlayer();
-                        final String reason = jsonObject.get("reason").getAsString();
-                        switch (reason) {
-                            case "server_stop" -> Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
-                                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
-                                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
-                            }, 60L);
-                            case "send_command" -> {
-                                final OfflinePlayer sender = Bukkit.getOfflinePlayer(UUID.fromString(jsonObject.get("sender").getAsString()));
-                                Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                        Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+                            if (!offlinePlayer.isOnline()) {
+                                return;
+                            }
+                            final Player player = offlinePlayer.getPlayer();
+                            final String reason = jsonObject.get("reason").getAsString();
+                            switch (reason) {
+                                case "server_stop" -> {
+                                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.shutdowns.kick.server.message").forEach(string -> player.sendMessage(StringUtilities.colorize(string)));
+                                    player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.shutdowns.kick.server.sound.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.shutdowns.kick.server.sound.pitch"));
+                                }
+                                case "send_command" -> {
+                                    final OfflinePlayer sender = Bukkit.getOfflinePlayer(UUID.fromString(jsonObject.get("sender").getAsString()));
                                     this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.send.messages.success.target").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%player%", sender.getName()).replace("%server%", this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.prettified-name")))));
                                     player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.send.sounds.success.target.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.success.target.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.send.sounds.success.target.pitch"));
-                                }, 60L);
+                                }
+                                case "server_command" -> {
+                                    this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.server.messages.success").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%server%", this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.prettified-name")))));
+                                    player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.server.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.pitch"));
+                                }
                             }
-                            case "server_command" -> Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
-                                this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.commands.server.messages.success").forEach(string -> player.sendMessage(StringUtilities.colorize(string.replace("%server%", this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.servers.internal.prettified-name")))));
-                                player.playSound(player.getLocation(), Sound.valueOf(this.plugin.getComponentManager().getFileComponent().getConfiguration().getString("components.network.commands.server.sounds.success.sound")), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.volume"), (float) this.plugin.getComponentManager().getFileComponent().getConfiguration().getDouble("components.network.commands.server.sounds.success.pitch"));
-                            }, 60L);
-                        }
+                        }, 60L);
                     }
                 }
             }
