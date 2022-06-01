@@ -18,6 +18,7 @@ import net.evilkingdom.commons.utilities.time.TimeUtilities;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -57,7 +58,7 @@ public class ChatListener implements Listener {
     public void onPlayerChat(final AsyncChatEvent asyncChatEvent) {
         final Player player = asyncChatEvent.getPlayer();
         final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
-        final String message = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
+        final String message = PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.originalMessage());
         if (playerData.canStaffChat() || (message.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
             return;
         }
@@ -109,7 +110,7 @@ public class ChatListener implements Listener {
             } else {
                 final ItemStack item = player.getInventory().getItemInMainHand();
                 final String formattedItemAmount = NumberUtilities.format(item.getAmount(), NumberFormatType.LETTERS);
-                String itemName = PaperComponents.plainTextSerializer().serialize(item.displayName());
+                String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
                 if (itemName.startsWith("[") && itemName.endsWith("]")) {
                     itemName = itemName.substring(1, (itemName.length() - 1));
                 }
@@ -129,7 +130,7 @@ public class ChatListener implements Listener {
             }).forEach(onlinePlayer -> onlinePlayer.sendMessage(format));
         }
         if (selfData.getChatSlow().isPresent() && !LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.chat.global.slowchat.bypass")) {
-            final Cooldown cooldown = new Cooldown(this.plugin, "player-" + playerData.getUUID() + "-chat", selfData.getChatSlow().get());
+            final Cooldown cooldown = new Cooldown(this.plugin, "player-" + playerData.getUUID() + "-chat", (selfData.getChatSlow().get() / 50));
             cooldown.start();
         }
     }

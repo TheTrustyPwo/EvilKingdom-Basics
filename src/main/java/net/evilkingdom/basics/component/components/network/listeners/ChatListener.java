@@ -25,6 +25,7 @@ import net.evilkingdom.commons.utilities.string.StringUtilities;
 import net.evilkingdom.commons.utilities.time.TimeUtilities;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -64,7 +65,7 @@ public class ChatListener implements Listener {
     public void onPlayerChat(final AsyncChatEvent asyncChatEvent) {
         final Player player = asyncChatEvent.getPlayer();
         final PlayerData playerData = PlayerData.getViaCache(player.getUniqueId()).get();
-        String preMessage = PaperComponents.plainTextSerializer().serialize(asyncChatEvent.originalMessage());
+        String preMessage = PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.originalMessage());
         if (!playerData.canStaffChat() && !(preMessage.startsWith("#") && LuckPermsUtilities.getPermissionsViaCache(player.getUniqueId()).contains("basics.network.staff"))) {
             return;
         }

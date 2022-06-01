@@ -7,6 +7,211 @@ components:
     #The component's commands.
     commands:
 
+      #The "/slowchat" command.
+      #The permission for this command is "basics.chat.commands.slowchat".
+      slowchat:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the mutechat is a success.
+          success:
+
+            #The sound sent to the player when the mutechat is a success.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online players when the mutechat is a success.
+            online-players:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online bypassers when the mutechat is a success.
+            #This applies to online players with the permission "basics.chat.global.mutechat.bypass".
+            online-bypassers:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/slowchat <duration>&e."
+
+          #The message sent when the player enters an invalid duration.
+          invalid-duration:
+            - "&6&lBasics &7» &eInvalid duration, &eyou must use a &6simplified timespan&e."
+
+          #The message sent when the slowchat is a success.
+          success:
+
+            #The message sent when the slowchat is set.
+            #Variables:
+            # » %duration% ~ The slowchat's duration.
+            set:
+
+              #The message sent to the player when the slowchat is a success.
+              player:
+                - "&6&lBasics &7» &eYou have set the chat's slow to &6%duration%&e."
+
+              #The message sent to the online players when the slowchat is a success.
+              #Variables:
+              # » %player% ~ The player.
+              online-players:
+                - "&6&lBasics &7» &eThe chat's slow has been set to &6%duration% &eby &6%player%&e."
+
+              #The message sent to the online bypassers when the slowchat is a success.
+              #This applies to online players with the permission "basics.chat.global.slowchat.bypass".
+              #Variables:
+              # » %player% ~ The player.
+              online-bypassers:
+                - "&6&lBasics &7» &eThe chat's slow has been set to &6%duration% &eby &6%player%&e."
+                - "&7&o(But don't worry, you have the authority to bypass this change!)"
+
+            #The message sent when the slowchat is removed.
+            removed:
+
+              #The message sent to the player when the slowchat is a success.
+              player:
+                - "&6&lBasics &7» &eYou have &6removed&e the chat's slow."
+
+              #The message sent to the online players when the slowchat is a success.
+              #Variables:
+              # » %player% ~ The player.
+              online-players:
+                - "&6&lBasics &7» &eThe chat's slow has been &6removed &eby &6%player%&e."
+
+              #The message sent to the online bypassers when the slowchat is a success.
+              #This applies to online players with the permission "basics.chat.global.slowchat.bypass".
+              #Variables:
+              # » %player% ~ The player.
+              online-bypassers:
+                - "&6&lBasics &7» &eThe chat's slow has been &6removed &eby &6%player%&e."
+
+      #The "/clearchat" command.
+      #The permission for this command is "basics.chat.commands.clearchat".
+      clearchat:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the clearchat is a success.
+          success:
+
+            #The sound sent to the player when the clearchat is a success.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the online players when the clearchat is a success.
+            online-players:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the sender's permissions are invalid (doesn't have the command's permission).
+          invalid-permissions:
+            - "&6&lBasics &7» &eInvalid permissions, you do not have the &6authority&e to execute this command."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/clearchat&e."
+
+          #The message sent when the clearchat is a success.
+          success:
+
+            #The message sent to the player when the clearchat is a success.
+            player:
+              - "&6&lBasics &7» &eYou have &6cleared &ethe chat."
+
+            #The message sent to the online players when the clearchat is a success.
+            #Variables:
+            # » %player% ~ The player.
+            online-players:
+              - "&6&lBasics &7» &eThe chat has been &6cleared &eby &6%player%&e."
+
       #The "/mutechat" command.
       #The permission for this command is "basics.chat.commands.mutechat".
       mutechat:
@@ -107,6 +312,436 @@ components:
             online-bypassers:
               - "&6&lBasics &7» &eThe chat has been &6%status% &eby &6%player%&e."
               - "&7&o(But don't worry, you have the authority to bypass this change!)"
+
+      #The "/togglechat" command.
+      togglechat:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the togglechat is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/togglechat&e."
+
+          #The message sent when the togglechat is a success.
+          #Variables:
+          # » %status% ~ The chat's status.
+          success:
+            - "&6&lBasics &7» &eYou have &6%status% &eyour chat."
+
+      #The "/togglemessages" command.
+      togglemessages:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the togglemessages is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/togglemessages&e."
+
+          #The message sent when the togglemessages is a success.
+          #Variables:
+          # » %status% ~ The messages' status.
+          success:
+            - "&6&lBasics &7» &eYou have &6%status% &eyour messages."
+
+      #The "/message" command.
+      message:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the message is a success.
+          success:
+
+            #The sound sent to the player.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the target.
+            target:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/message <player> <message>&e."
+
+          #The message sent when the targeted player is invalid (not online).
+          #Variables:
+          # » %player% ~ The targeted player.
+          invalid-player:
+            - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
+
+          #The message sent when the message is invalid.
+          invalid-message:
+
+            #The message when the player has their messages disabled.
+            messages-disabled:
+              - "&6&lBasics &7» &eInvalid message, your messages are currently &cdisabled&e."
+
+            #The message when the player is ignored by the targeted player.
+            #Variables:
+            # » %player% ~ The targeted player
+            ignoring-player:
+              - "&6&lBasics &7» &eInvalid message, you are currently ignoring &6%player%&e."
+
+            #The message when the targeted player has their messages disabled.
+            #Variables:
+            # » %player% ~ The targeted player.
+            player-messages-disabled:
+              - "&6&lBasics &7» &eInvalid message, &6%player%&e's messages are currently &cdisabled&e."
+
+            #The message when the player is ignored by the targeted player.
+            #Variables:
+            # » %player% ~ The targeted player
+            ignored-by-player:
+              - "&6&lBasics &7» &eInvalid message, &6%player% &eis currently ignoring you."
+
+          #The message sent when the message is a success.
+          #Variables:
+          # » %player% ~ The targeted player.
+          # » %player_prefix% ~ The targeted player's prefix.
+          # » %player_suffix% ~ The targeted player's suffix.
+          # » %message% ~ The message.
+          success:
+
+            #The message sent to the player.
+            player:
+              - "&7(To %player_prefix%%player%%player_suffix%&7)&f %message%"
+
+            #The message sent to the target.
+            target:
+              - "&7(From %player_prefix%%player%%player_suffix%&7)&f %message%"
+
+      #The "/reply" command.
+      reply:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the reply is a success.
+          success:
+
+            #The sound sent to the player.
+            player:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.5
+
+              #The sound's volume.
+              volume: 1.0
+
+            #The sound sent to the target.
+            target:
+
+              #The sound.
+              #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+              sound: "BLOCK_NOTE_BLOCK_BIT"
+
+              #The sound's pitch.
+              pitch: 1.0
+
+              #The sound's volume.
+              volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/reply <message>&e."
+
+          #The message sent when the reply is invalid.
+          invalid-reply:
+
+            #The message when the player has their messages disabled.
+            messages-disabled:
+              - "&6&lBasics &7» &eInvalid reply, your messages are currently &cdisabled&e."
+
+            #The message when the player has no player (to reply to).
+            no-player:
+              - "&6&lBasics &7» &eInvalid reply, you do not have an &6ongoing&e conversation."
+
+            #The message when the player is ignored by the targeted player.
+            #Variables:
+            # » %player% ~ The targeted player.
+            ignoring-player:
+              - "&6&lBasics &7» &eInvalid reply, you are currently ignoring &6%player%&e."
+
+            #The message when the targeted player has their messages disabled.
+            #Variables:
+            # » %player% ~ The targeted player.
+            player-messages-disabled:
+              - "&6&lBasics &7» &eInvalid reply, &6%player%&e's messages are currently &cdisabled&e."
+
+            #The message when the player is ignored by the targeted player.
+            #Variables:
+            # » %player% ~ The targeted player.
+            ignored-by-player:
+              - "&6&lBasics &7» &eInvalid reply, &6%player% &eis currently ignoring you."
+
+          #The message sent when the reply is a success.
+          #Variables:
+          # » %player% ~ The targeted player.
+          # » %player_prefix% ~ The targeted player's prefix.
+          # » %player_suffix% ~ The targeted player's suffix.
+          # » %message% ~ The message.
+          success:
+
+            #The message sent to the player.
+            player:
+              - "&7(To %player_prefix%%player%%player_suffix%&7)&f %message%"
+
+            #The message sent to the target.
+            target:
+              - "&7(From %player_prefix%%player%%player_suffix%&7)&f %message%"
+
+      #The "/ignore" command.
+      ignore:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the ignore is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/ignore <player>&e."
+
+          #The message sent when the targeted player is invalid (not online).
+          #Variables:
+          # » %player% ~ The targeted player.
+          invalid-player:
+            - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
+
+          #The message sent when the ignore is invalid (the targeted player is already ignored).
+          #Variables:
+          # » %player% ~ The targeted player.
+          invalid-ignore:
+            - "&6&lBasics &7» &eInvalid ignore, you are already ignoring &6%player%&e."
+
+          #The message sent when the ignore is a success.
+          #Variables:
+          # » %player% ~ The targeted player.
+          success:
+            - "&6&lBasics &7» &eYou are now ignoring &6%player%&e."
+
+      #The "/unignore" command.
+      unignore:
+
+        #The command's sounds.
+        sounds:
+
+          #The sound sent when there is an error.
+          error:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 0.5
+
+            #The sound's volume.
+            volume: 1.0
+
+          #The sound sent when the unignore is a success.
+          success:
+
+            #The sound.
+            #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.
+            sound: "BLOCK_NOTE_BLOCK_BIT"
+
+            #The sound's pitch.
+            pitch: 1.5
+
+            #The sound's volume.
+            volume: 1.0
+
+        #The command's messages.
+        messages:
+
+          #The message sent when the executor is not a player.
+          invalid-executor:
+            - "&6&lBasics &7» &eInvalid executor, &eyou must be a &6player&e."
+
+          #The message sent when the player enters an invalid usage.
+          invalid-usage:
+            - "&6&lBasics &7» &eInvalid usage, &etry &6/unignore <player>&e."
+
+          #The message sent when the targeted player is invalid (not online).
+          #Variables:
+          # » %player% ~ The targeted player.
+          invalid-player:
+            - "&6&lBasics &7» &eInvalid player, &6%player%&e is not online."
+
+          #The message sent when the unignore is invalid (the targeted player is not ignored).
+          #Variables:
+          # » %player% ~ The targeted player.
+          invalid-unignore:
+            - "&6&lBasics &7» &eInvalid unignore, you are not ignoring &6%player%&e."
+
+          #The message sent when the unignore is a success.
+          #Variables:
+          # » %player% ~ The targeted player.
+          success:
+            - "&6&lBasics &7» &eYou are no longer ignoring &6%player%&e."
 
     #The list of filtered words.
     #The system automatically detects replacements of numbers and other characters.
@@ -818,7 +1453,7 @@ components:
         server:
 
             #The sound sent when reaching the lobby.
-            sounds:
+            sound:
 
               #The sound.
               #Use the SpigotMC 1.18.2's API's sound list, which can be found at https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html.

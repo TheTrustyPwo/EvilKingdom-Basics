@@ -27,6 +27,7 @@ public class PlayerData {
     private final UUID uuid;
     private boolean canMessage, canChat, canStaffChat;
     private ArrayList<UUID> ignored;
+    private Optional<UUID> reply;
     private final ArrayList<Cooldown> cooldowns;
 
     private static final HashSet<PlayerData> cache = new HashSet<PlayerData>();
@@ -44,6 +45,7 @@ public class PlayerData {
         this.canMessage = true;
         this.ignored = new ArrayList<UUID>();
         this.cooldowns = new ArrayList<Cooldown>();
+        this.reply = Optional.empty();
     }
 
     /**
@@ -188,6 +190,24 @@ public class PlayerData {
      */
     public Boolean canMessage() {
         return this.canMessage;
+    }
+
+    /**
+     * Allows you to set the data's reply.
+     *
+     * @param reply ~ The data's reply to set.
+     */
+    public void setReply(final Optional<UUID> reply) {
+        this.reply = reply;
+    }
+
+    /**
+     * Allows you to retrieve the data's reply.
+     *
+     * @return The data's reply.
+     */
+    public Optional<UUID> getReply() {
+        return this.reply;
     }
 
     /**
