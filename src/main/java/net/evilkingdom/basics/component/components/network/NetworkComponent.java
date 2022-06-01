@@ -26,9 +26,10 @@ import java.util.stream.Collectors;
 public class NetworkComponent {
 
     private final Basics plugin;
-    private BukkitTask serverTask;
+    private BukkitTask serverTask, automatedAnnouncementsTask;
     private boolean stopping;
     private HashSet<NetworkServer> servers;
+    private int currentAutomatedAnnouncement;
 
     /**
      * Allows you to create the component.
@@ -47,6 +48,7 @@ public class NetworkComponent {
         this.initializeServers();
         this.registerCommands();
         this.registerListeners();
+        this.initializeAutomatedAnnouncements();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized."));
     }
 
@@ -55,6 +57,7 @@ public class NetworkComponent {
      */
     public void terminate() {
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating..."));
+        this.terminateAutomatedAnnouncements();
         this.terminateServers();
         this.terminateTransmissions();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated."));
@@ -84,6 +87,34 @@ public class NetworkComponent {
         new ChatListener().register();
         new ConnectionListener().register();
         Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aRegistered listeners."));
+    }
+
+    /**
+     * Allows you to initialize the automated announcements.
+     */
+    private void initializeAutomatedAnnouncements() {
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitializing automated announcements..."));
+        this.currentAutomatedAnnouncement = 1;
+        this.automatedAnnouncementsTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> {
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> this.plugin.getComponentManager().getFileComponent().getConfiguration().getStringList("components.network.automated-announcements.list." + this.currentAutomatedAnnouncement).forEach(string -> onlinePlayer.sendMessage(StringUtilities.colorize(string))));
+            if (this.plugin.getComponentManager().getFileComponent().getConfiguration().getConfigurationSection("components.network.automated-announcements.list").getKeys(false).contains(String.valueOf(this.currentAutomatedAnnouncement + 1))) {
+                this.currentAutomatedAnnouncement = currentAutomatedAnnouncement + 1;
+            } else {
+                this.currentAutomatedAnnouncement = 1;
+            }
+        }, 0L, this.plugin.getComponentManager().getFileComponent().getConfiguration().getInt("components.network.automated-announcements.interval") * 20L);
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&2[Basics » Component » Components » Network] &aInitialized automated announcements."));
+    }
+
+    /**
+     * Allows you to initialize the automated announcements.
+     */
+    private void terminateAutomatedAnnouncements() {
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminating automated announcements..."));
+        if (this.automatedAnnouncementsTask != null) {
+            this.automatedAnnouncementsTask.cancel();
+        }
+        Bukkit.getConsoleSender().sendMessage(StringUtilities.colorize("&4[Basics » Component » Components » Network] &cTerminated automated announcements."));
     }
 
     /**

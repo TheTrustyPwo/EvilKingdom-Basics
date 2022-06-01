@@ -884,6 +884,46 @@ components:
   #Configuration for the Network component.
   network:
 
+    #Configuration for automated announcements.
+    automated-announcments:
+
+      #The interval of the automated announcements (in seconds).
+      interval: 300
+
+      #The list of announcements.
+      announcements:
+
+        1:
+          - ""
+          - "&6&lAnnouncement &7(Automated)"
+          - "&6 » &eWe are &6Evil Kingdom&e, the ultimate network!"
+          - ""
+
+        2:
+          - ""
+          - "&6&lAnnouncement &7(Automated)"
+          - "&6 » &eWe are &6Evil Kingdom&e, the best network!"
+          - ""
+
+        3:
+          - ""
+          - "&6&lAnnouncement &7(Automated)"
+          - "&6 » &eWe are &6Evil Kingdom&e, the coolest network!"
+          - ""
+
+        4:
+          - ""
+          - "&6&lAnnouncement &7(Automated)"
+          - "&6 » &eWe are &6Evil Kingdom&e, the most unique network!"
+          - ""
+
+        5:
+          - ""
+          - "&6&lAnnouncement &7(Automated)"
+          - "&6 » &eWe are &6Evil Kingdom&e, the dopest network!"
+          - ""
+
+
     #The component's commands.
     commands:
 
@@ -1288,15 +1328,18 @@ components:
               - "&6&lBasics &7» &eInvalid server, &6%server% &eis currently %status%&e."
 
           #The message sent when the announce is a success.
-            # » %message% ~ The announcement's message.
+          #Variables:
+          # » %message% ~ The announcement's message.
           success:
 
             #The message sent to the player.
+            #Variables:
             # » %server% ~ The targeted server.
             player:
               - "&6&lBasics &7» &eYou have an announcement to &6%server% &ewith the message &6%message%&e."
 
             #The message sent to the online players.
+            #Variables:
             # » %player% ~ The player that sent the announcement.
             online-players:
               - ""
