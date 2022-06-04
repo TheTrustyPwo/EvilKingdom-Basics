@@ -11,11 +11,7 @@ import net.evilkingdom.commons.datapoint.objects.Datapoint;
 import net.evilkingdom.commons.datapoint.objects.Datasite;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -51,7 +47,7 @@ public class SelfData {
             return CompletableFuture.supplyAsync(() -> true);
         } else {
             final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-            final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+            final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin && !innerDatasite.getName().equals("network")).findFirst().get();
             final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
             return datapoint.exists("self");
         }
@@ -64,7 +60,7 @@ public class SelfData {
      */
     private CompletableFuture<Boolean> load() {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin && !innerDatasite.getName().equals("network")).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
         return datapoint.get("self").thenApply(optionalJsonObject -> {
             if (optionalJsonObject.isEmpty()) {
@@ -103,7 +99,7 @@ public class SelfData {
         jsonObject.addProperty("canChat", this.canChat);
         this.chatSlow.ifPresent(chatSlow -> jsonObject.addProperty("chatSlow", chatSlow));
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin && !innerDatasite.getName().equals("network")).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_self")).findFirst().get();
         datapoint.save(jsonObject, "self", asynchronous);
     }

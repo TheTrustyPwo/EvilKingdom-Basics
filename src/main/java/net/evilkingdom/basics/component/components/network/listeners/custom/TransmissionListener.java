@@ -10,6 +10,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.papermc.paper.text.PaperComponents;
 import net.evilkingdom.basics.Basics;
+import net.evilkingdom.basics.component.components.data.objects.NetworkPlayerData;
+import net.evilkingdom.basics.component.components.data.objects.NetworkRankData;
+import net.evilkingdom.basics.component.components.data.objects.PlayerData;
 import net.evilkingdom.basics.component.components.network.objects.NetworkServer;
 import net.evilkingdom.commons.transmission.TransmissionImplementor;
 import net.evilkingdom.commons.transmission.abstracts.TransmissionHandler;
@@ -24,8 +27,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 public class TransmissionListener extends TransmissionHandler {
@@ -95,6 +100,23 @@ public class TransmissionListener extends TransmissionHandler {
                         final String sendServer = jsonObject.get("server").getAsString();
                         final TransmissionServer transmissionServer = transmissionSite.getServers().stream().filter(internalTransmissionServer -> internalTransmissionServer.getName().equals(sendServer)).findFirst().get();
                         transmissionSite.send(player, transmissionServer);
+                    }
+                    case "update_rank" -> {
+                        final String rank = data.split("=")[1];
+                        final NetworkRankData preNetworkRankData = NetworkRankData.getViaCache(rank).get();
+                        preNetworkRankData.uncache();
+                        NetworkRankData.get(rank).whenComplete((networkRankData, networkRankDataThrowable) -> {
+                            networkRankData.cache();
+                            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                                final NetworkPlayerData networkPlayerData = NetworkPlayerData.getViaCache(onlinePlayer.getUniqueId()).get();
+                                if (networkPlayerData.getRanks().contains(rank) && networkPlayerData.getPermissionAttachment().isPresent()) {
+                                    final PermissionAttachment permissionAttachment = networkPlayerData.getPermissionAttachment().get();
+                                    permissionAttachment.getPermissions().clear();
+                                    networkPlayerData.getRefinedPermissions().forEach(refinedPermission -> permissionAttachment.setPermission(refinedPermission, true));
+                                    networkPlayerData.getRefinedNegatedPermissions().forEach(refinedNegatedPermission -> permissionAttachment.setPermission(refinedNegatedPermission, false));
+                                }
+                            });
+                        });
                     }
                     case "player_sent" -> {
                         final JsonObject jsonObject = JsonParser.parseString(data.split("=")[1]).getAsJsonObject();

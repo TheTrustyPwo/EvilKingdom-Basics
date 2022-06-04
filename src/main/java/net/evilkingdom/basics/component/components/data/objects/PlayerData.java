@@ -58,7 +58,7 @@ public class PlayerData {
             return CompletableFuture.supplyAsync(() -> true);
         } else {
             final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-            final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+            final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin && !innerDatasite.getName().equals("network")).findFirst().get();
             final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
             return datapoint.exists(this.uuid.toString());
         }
@@ -72,7 +72,7 @@ public class PlayerData {
      */
     private CompletableFuture<Boolean> load() {
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin && !innerDatasite.getName().equals("network")).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
         return datapoint.get(this.uuid.toString()).thenApply(optionalJsonObject -> {
             if (optionalJsonObject.isEmpty()) {
@@ -123,7 +123,7 @@ public class PlayerData {
         });
         jsonObject.add("cooldowns", cooldownsJsonArray);
         final DataImplementor dataImplementor = DataImplementor.get(this.plugin);
-        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin).findFirst().get();
+        final Datasite datasite = dataImplementor.getSites().stream().filter(innerDatasite -> innerDatasite.getPlugin() == this.plugin && !innerDatasite.getName().equals("network")).findFirst().get();
         final Datapoint datapoint = datasite.getPoints().stream().filter(innerDatapoint -> innerDatapoint.getName().equals("basics_players")).findFirst().get();
         datapoint.save(jsonObject, this.uuid.toString(), asynchronous);
     }

@@ -56,14 +56,14 @@ public class ComponentManager {
         if (this.chatComponent != null) {
             this.chatComponent.terminate();
         }
-        if (this.networkComponent != null) {
-            this.networkComponent.terminate();
-        }
         if (this.teleportComponent != null) {
             this.teleportComponent.terminate();
         }
         if (this.dataComponent != null) {
             this.dataComponent.terminate();
+        }
+        if (this.networkComponent != null) {
+            this.networkComponent.terminate();
         }
         if (this.fileComponent != null) {
             this.fileComponent.terminate();
